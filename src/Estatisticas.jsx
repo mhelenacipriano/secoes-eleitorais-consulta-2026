@@ -44,6 +44,7 @@ export default function Estatisticas() {
             <div className="stats-card destaque"><span>Online agora</span><strong>{dados ? nInt(dados.online) : '…'}</strong></div>
             <div className="stats-card"><span>Acessos hoje</span><strong>{dados ? nInt(dados.hoje) : '…'}</strong></div>
             <div className="stats-card"><span>Acessos no total</span><strong>{dados ? nInt(dados.total) : '…'}</strong></div>
+            <div className="stats-card"><span>Curtidas ★</span><strong>{dados ? nInt(dados.curtidas) : '…'}</strong></div>
           </div>
           {dados && (
             <ul className="stats-dias" aria-label="Acessos nos últimos 7 dias">

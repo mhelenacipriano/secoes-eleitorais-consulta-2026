@@ -14,14 +14,15 @@ export default async function handler(req, res) {
   const agora = Date.now();
   const dias = Array.from({ length: 7 }, (_, i) => diaSP(new Date(agora - i * 86_400_000)));
   try {
-    const [total, porDia, , online] = await pipeline([
+    const [total, porDia, , online, curtidas] = await pipeline([
       ['GET', `${SITE}:total`],
       ['MGET', ...dias.map((d) => `${SITE}:dia:${d}`)],
       ['ZREMRANGEBYSCORE', `${SITE}:online`, '-inf', agora - janelaOnlineMs],
       ['ZCARD', `${SITE}:online`],
+      ['GET', `${SITE}:curtidas`],
     ]);
     const ultimos7 = dias.map((dia, i) => ({ dia, visitas: Number(porDia[i] || 0) }));
-    return res.status(200).json({ site: SITE, online: Number(online || 0), hoje: ultimos7[0].visitas, total: Number(total || 0), ultimos7, atualizadoEm: new Date(agora).toISOString() });
+    return res.status(200).json({ site: SITE, online: Number(online || 0), hoje: ultimos7[0].visitas, total: Number(total || 0), curtidas: Number(curtidas || 0), ultimos7, atualizadoEm: new Date(agora).toISOString() });
   } catch (e) {
     return res.status(502).json({ erro: 'Não foi possível ler o contador.' });
   }

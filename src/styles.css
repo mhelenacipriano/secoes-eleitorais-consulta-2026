@@ -352,7 +352,7 @@ html { scroll-behavior: smooth; }
 /* ---------- página escondida de acessos ---------- */
 .stats { max-width: 720px; margin: 40px auto; display: grid; gap: 16px; } .stats h1 { font-size: 2rem; } .stats-sub, .stats-nota { color: var(--muted); font-size: .85rem; }
 .stats-form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .stats-erro { color: var(--red); font-weight: 600; }
-.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; } @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } }
+.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } @media (max-width: 560px) { .stats-grid { grid-template-columns: 1fr; } }
 .stats-card { border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; background: var(--panel); display: grid; gap: 4px; } .stats-card span { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
 .stats-card strong { font-family: var(--serif); font-size: 2.4rem; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; } .stats-card.destaque { border-color: var(--red); } .stats-card.destaque strong { color: var(--red); }
 .stats-dias { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .stats-dias li { display: grid; grid-template-columns: 5.5rem 1fr 3.5rem; gap: 10px; align-items: center; font-size: .88rem; } .stats-dias i { height: 10px; border-radius: 5px; background: var(--red); min-width: 2px; transition: width .4s ease; } .stats-dias b { text-align: right; font-variant-numeric: tabular-nums; }
@@ -375,9 +375,6 @@ html { scroll-behavior: smooth; }
 .curtida .texto { display: grid; justify-items: end; line-height: 1; text-align: right; transform: rotate(-6deg) translateY(-5px); transform-origin: right center; transition: transform .35s cubic-bezier(.3, 1.4, .5, 1);
   text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 9px var(--bg); }
 .curtida .frase { font-size: 1.08rem; font-weight: 600; letter-spacing: .01em; }
-.curtida .num { height: 1.15em; overflow: hidden; position: relative; margin: 3px 6px 0 0; font-size: .82rem; color: var(--muted); font-weight: 500; transform: rotate(4deg); }
-.curtida .num span { display: block; transition: transform .45s cubic-bezier(.3, 1.2, .4, 1), opacity .35s; } .curtida .num .novo { position: absolute; right: 0; top: 0; transform: translateY(110%); opacity: 0; }
-.curtida.sobe .num .velho { transform: translateY(-110%); opacity: 0; } .curtida.sobe .num .novo { transform: none; opacity: 1; }
 .curtida.curtiu .frase { color: var(--red); }
 .curtida .faisca { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 50%; background: var(--red); opacity: 0; pointer-events: none; }
 .curtida.sobe .faisca { animation: curtida-faisca .65s ease-out forwards; animation-delay: .05s; } @keyframes curtida-faisca { 0% { opacity: 1; transform: rotate(var(--a)) translateX(4px) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateX(28px) scale(.2); } }
