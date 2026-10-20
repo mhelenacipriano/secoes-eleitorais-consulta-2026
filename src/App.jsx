@@ -12,8 +12,7 @@ export default function App() {
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
-        <p className="banner" role="note"><strong>Informação mais recente.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções; a fonte não informa a data de publicação). As versões anteriores das listas não são usadas aqui — a comparação entre elas está na análise completa.</p>
-        <p className="banner atencao" role="note"><strong>Confirme sempre no e-Título.</strong> A lista pode ficar desatualizada, e seções que apareceram em versões anteriores e deixaram de constar na mais recente não têm garantia de que o local de votação seja o mesmo: não conseguimos confirmar se a mudança foi mantida, desfeita ou corrigida. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
+        <p className="banner" role="note"><strong>Informação mais recente, mas confirme no e-Título.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções; a fonte não informa a data de publicação). As versões anteriores não são usadas aqui — a comparação está na análise completa. A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
         <header className="hero estreito">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
@@ -29,7 +28,7 @@ export default function App() {
           </>
         ) : !erro && <div className="skeleton" role="status" aria-label="Carregando"><i /><i /><i /></div>}
 
-        <details className="ajuda estreito">
+        <details className="ajuda">
           <summary>Onde encontro a zona e a seção?</summary>
           <div><p>Estão no seu <strong>título de eleitor</strong> (impresso ou digital) e no aplicativo <strong>e-Título</strong>.</p><p>Se a sua seção não aparece na busca, ela não consta na lista mais recente.</p></div>
         </details>

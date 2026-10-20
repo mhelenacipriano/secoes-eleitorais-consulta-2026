@@ -163,3 +163,32 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 .cartao-secao.nao .aviso { color: var(--fg2); }
 
 .foot .legal { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .8rem; line-height: 1.55; color: var(--muted); max-width: 72ch; } .foot .legal strong { color: var(--fg2); }
+
+/* ---------- Largura total, aviso único e resultados compactos ---------- */
+.banner { max-width: none; width: 100%; margin: 14px 0 0; padding: 10px 14px; border: 1px solid var(--line); border-left: 4px solid var(--red); border-radius: 10px; background: var(--panel); font-size: .82rem; line-height: 1.5; color: var(--fg2); }
+.banner strong { color: var(--fg); }
+.disclaimer { max-width: none; font-size: .82rem; }
+.consulta { max-width: none; margin-top: 18px; padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: var(--panel); gap: 12px; }
+.consulta-cab { display: flex; align-items: baseline; gap: 6px 16px; flex-wrap: wrap; } .consulta-cab h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.4rem, 3.5vw, 1.8rem); } .consulta-cab p { color: var(--muted); font-size: .88rem; }
+.form-linha { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1.5fr) minmax(0, .6fr) minmax(0, .6fr) auto; gap: 10px; align-items: start; }
+.btn-limpar { min-height: 40px !important; align-self: center; }
+@media (max-width: 900px) { .form-linha { grid-template-columns: 1fr 1fr; } .form-linha > :nth-child(1), .form-linha > :nth-child(2) { grid-column: 1 / -1; } .btn-limpar { grid-column: 1 / -1; justify-self: start; } }
+.consulta-res { margin-top: 4px; display: block; }
+.res-vazio { color: var(--muted); font-size: .85rem; }
+.res-box { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--bg); } .res-box.nao { padding-bottom: 12px; }
+.res-cab { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid var(--line); }
+.res-cab .selo { font-size: .76rem; padding: 3px 12px; } .res-conta { color: var(--fg2); font-size: .85rem; } .res-cab-acoes { margin-left: auto; display: inline-flex; gap: 4px; flex-wrap: wrap; }
+.res-box.nao .res-cab { border-bottom: 0; padding-bottom: 4px; }
+.res-texto { padding: 0 14px; font-size: .9rem; }
+.res-lista { list-style: none; margin: 0; padding: 0; }
+.res-linha { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1fr) minmax(0, 1fr); gap: 6px 18px; padding: 10px 14px; border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent); font-size: .88rem; }
+.res-linha:last-child { border-bottom: 0; }
+.res-id .zs { display: block; color: var(--muted); font-size: .78rem; margin-top: 1px; } .res-id strong { font-weight: 600; }
+.res-loc small { display: block; color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 1px; } .res-loc em { color: var(--muted); font-style: normal; font-size: .8rem; }
+.res-mais { padding: 8px 14px; font-size: .82rem; color: var(--muted); border-top: 1px solid var(--line); }
+.res-nota { padding: 8px 14px 0; font-size: .76rem; line-height: 1.5; color: var(--muted); } .res-box.nao .res-nota { color: var(--fg2); }
+.link-acao.destaque { color: var(--red); font-weight: 600; }
+@media (max-width: 700px) { .res-linha { grid-template-columns: 1fr; gap: 6px; } .res-cab-acoes { margin-left: 0; width: 100%; } .consulta { padding: 14px; } }
+.ajuda { max-width: none; }
+.tabela-card, .lista-completa { max-width: none; }
+.tabela { font-size: .85rem; } .tabela td { padding: 8px 12px; }
