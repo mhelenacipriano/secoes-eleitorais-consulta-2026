@@ -410,3 +410,8 @@ html { scroll-behavior: smooth; }
 
 /* a lista completa ocupa pelo menos uma tela, para o clique no mapa conseguir levar o título ao topo mesmo com poucas linhas */
 .lista-completa { min-height: calc(100vh - 72px); scroll-margin-top: 8px; }
+
+/* sugestões da consulta (zona → municípios; município → zonas) */
+.dica { margin-top: 12px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel2); display: grid; gap: 8px; }
+.dica p { margin: 0; font-size: .88rem; color: var(--fg2); } .dica p strong { color: var(--fg); }
+.dica-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; } .dica-mais { font-size: .8rem; color: var(--muted); }

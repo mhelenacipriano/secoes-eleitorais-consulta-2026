@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Autocomplete, Button, TextField } from '@mui/material';
+import { Autocomplete, Button, Chip, TextField } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
@@ -59,6 +59,24 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
     }, 1500);
     return () => clearTimeout(t);
   }, [c, preenchido, achadas, sugestoes]);
+  // sugestões: só a zona → municípios que têm essa zona; município com seções alteradas → total e zonas
+  const dica = useMemo(() => {
+    const MAX = 12;
+    if (c.zona && !c.uf && !c.mun.trim()) {
+      const g = new Map();
+      for (const l of dados.linhas) if (l.zona === Number(c.zona)) { const k = `${l.uf}|${l.municipio}`; g.set(k, (g.get(k) || 0) + 1); }
+      const itens = [...g].map(([k, n]) => { const [uf, municipio] = k.split('|'); return { uf, municipio, n }; }).sort((a, b) => b.n - a.n || a.municipio.localeCompare(b.municipio, 'pt-BR'));
+      return itens.length ? { tipo: 'zona', itens: itens.slice(0, MAX), resto: Math.max(0, itens.length - MAX), total: itens.length } : null;
+    }
+    const nm = norm(c.mun);
+    if (nm && !c.zona && !c.secao) {
+      const linhas = dados.linhas.filter((l) => l.mun === nm && (!c.uf || l.uf === c.uf));
+      if (!linhas.length) return null;
+      const z = new Map(); for (const l of linhas) z.set(l.zona, (z.get(l.zona) || 0) + 1);
+      return { tipo: 'mun', nome: linhas[0].municipio, ufs: [...new Set(linhas.map((l) => l.uf))], n: linhas.length, zonas: [...z].sort((a, b) => a[0] - b[0]) };
+    }
+    return null;
+  }, [dados, c]);
   const campoNum =(k, rotulo, ph) => <TextField size="small" label={rotulo} placeholder={ph} value={c[k]} onChange={(e) => set(k, e.target.value.replace(/\D/g, ''))} slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />;
 
   return (
@@ -78,6 +96,24 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
         {campoNum('secao', 'Seção', 'Ex.: 345')}
         <Button className="btn-limpar" variant="text" color="inherit" type="button" onClick={() => setC({ uf: '', mun: '', zona: '', secao: '' })} disabled={!preenchido}>Limpar</Button>
       </form>
+
+      {dica?.tipo === 'zona' && (
+        <div className="dica" role="group" aria-label="Sugestões de município">
+          <p>A zona {Number(c.zona)} aparece {dica.total === 1 ? 'em 1 município' : `em ${dica.total} municípios`} da lista. É o seu?</p>
+          <div className="dica-chips">
+            {dica.itens.map((i) => <Chip key={i.uf + i.municipio} size="small" variant="outlined" clickable label={`${i.municipio} · ${i.uf} (${i.n})`} onClick={() => setC((x) => ({ ...x, uf: i.uf, mun: i.municipio }))} />)}
+            {dica.resto > 0 && <span className="dica-mais">+ {dica.resto}</span>}
+          </div>
+        </div>
+      )}
+      {dica?.tipo === 'mun' && (
+        <div className="dica" role="note">
+          <p><strong>{dica.nome}{dica.ufs.length === 1 ? ` · ${dica.ufs[0]}` : ''}</strong> tem {dica.n} {dica.n === 1 ? 'seção alterada' : 'seções alteradas'}, em {dica.zonas.length} {dica.zonas.length === 1 ? 'zona' : 'zonas'}. Filtre pela sua zona:</p>
+          <div className="dica-chips">
+            {dica.zonas.map(([z, n]) => <Chip key={z} size="small" variant="outlined" clickable label={`Zona ${z} (${n})`} onClick={() => set('zona', String(z))} />)}
+          </div>
+        </div>
+      )}
 
       <div className="consulta-res" aria-live="polite">
         {!preenchido && <p className="res-vazio">Os resultados aparecem aqui assim que você preencher qualquer campo.</p>}
