@@ -26,8 +26,11 @@ function Linha({ l }) {
 }
 
 /** Seção 1: "Encontre a sua seção". Todos os campos são opcionais; qualquer um já mostra resultados. */
-export default function ConsultaSecao({ dados, onVerLista }) {
+export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
   const [c, setC] = useState(lerUrl);
+  // o mapa escolheu (ou desmarcou) um estado: preenche o campo e limpa o município, que podia ser de outro estado
+  useEffect(() => { if (forcarUf?.n) setC((x) => ({ ...x, uf: forcarUf.uf, mun: '' })); }, [forcarUf]);
+  useEffect(() => { onUf?.(c.uf); }, [c.uf, onUf]);
   const registrada = useRef('');
   const set = (k, v) => setC((x) => ({ ...x, [k]: v }));
   useEffect(() => { gravarUrl(c); }, [c]);

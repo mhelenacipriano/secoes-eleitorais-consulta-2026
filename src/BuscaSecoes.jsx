@@ -56,6 +56,7 @@ export default function BuscaSecoes({ dados, externo }) {
     if (!externo?.n) return undefined;
     setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros });
     setDestaque(false);
+    if (externo.semRolar) return undefined;   // vindo do mapa: só filtra, sem rolar nem destacar
     (celular ? tabelaRef : secaoRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const entra = setTimeout(() => setDestaque(true), 450);   // espera a rolagem para o fade-in ser visto
     const sai = setTimeout(() => setDestaque(false), 3600);

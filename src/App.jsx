@@ -5,11 +5,16 @@ import { useState } from 'react';
 import BuscaSecoes from './BuscaSecoes.jsx';
 import Curtida from './Curtida.jsx';
 import ConsultaSecao from './ConsultaSecao.jsx';
+import MapaEstados from './MapaEstados.jsx';
 
 export default function App() {
   const { dados, erro } = useDados();
   const [externo, setExterno] = useState(null);
   const [avisoAberto, setAvisoAberto] = useState(false);
+  const [ufSel, setUfSel] = useState('');
+  const [forcarUf, setForcarUf] = useState(null);
+  // clique no mapa: preenche o campo Estado da consulta e filtra a tabela (sem rolar a página)
+  const escolherUf = (uf) => { setForcarUf((x) => ({ n: (x?.n || 0) + 1, uf })); setExterno((x) => ({ n: (x?.n || 0) + 1, filtros: { uf }, semRolar: true })); };
   return (
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
@@ -33,7 +38,8 @@ export default function App() {
         {erro && <p className="erro" role="alert">Não foi possível carregar os dados ({erro.message}). Tente recarregar a página.</p>}
         {dados ? (
           <>
-            <ConsultaSecao dados={dados} onVerLista={(filtros) => setExterno((x) => ({ n: (x?.n || 0) + 1, filtros }))} />
+            <ConsultaSecao dados={dados} onVerLista={(filtros) => setExterno((x) => ({ n: (x?.n || 0) + 1, filtros }))} forcarUf={forcarUf} onUf={setUfSel} />
+            <MapaEstados dados={dados} uf={ufSel} onEscolher={escolherUf} />
             <BuscaSecoes dados={dados} externo={externo} />
           </>
         ) : !erro && <div className="skeleton" role="status" aria-label="Carregando"><i /><i /><i /></div>}
