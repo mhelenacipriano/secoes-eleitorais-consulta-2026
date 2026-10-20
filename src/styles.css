@@ -259,3 +259,4 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 @media (min-width: 761px) { .c-zs { display: none; } }
 
 .so-celular { display: none; } @media (max-width: 760px) { .so-desktop { display: none; } .so-celular { display: inline; } }
+.foot .legal { max-width: none; width: 100%; align-self: stretch; justify-self: stretch; font-size: .72rem; line-height: 1.5; }
