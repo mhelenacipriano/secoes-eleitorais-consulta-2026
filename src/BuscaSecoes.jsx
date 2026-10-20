@@ -10,7 +10,7 @@ const NUMERICAS = ['zona', 'secao', 'eleitores'];
 // Campos filtráveis: o rótulo é o mesmo do cabeçalho da coluna.
 const CAMPOS = { uf: { rotulo: 'Estado', tipo: 'estado' }, mun: { rotulo: 'Município', tipo: 'municipio' }, zona: { rotulo: 'Zona', tipo: 'num' }, secao: { rotulo: 'Seção', tipo: 'num' }, ini: { rotulo: 'Onde votava', tipo: 'texto' }, fin: { rotulo: 'Onde vai votar', tipo: 'texto' } };
 const CHAVES_FILTRO = Object.keys(CAMPOS);
-const OFICIAL = 'Confirme o seu local de votação nos canais oficiais da Justiça Eleitoral (o TRE do seu estado ou o aplicativo e-Título) antes de ir votar.';
+const OFICIAL = 'Confirme o seu local de votação no aplicativo e-Título ou no Autoatendimento Eleitoral do TSE (ou no site do TRE do seu estado) antes de ir votar.';
 
 export const lerFiltros = () => {
   const p = new URLSearchParams(location.hash.replace(/^#\??/, ''));
@@ -153,7 +153,7 @@ export default function BuscaSecoes({ dados, externo }) {
         {ordenadas.length === 0 ? (
           <div className="vazio" role="status">
             <p><strong>Nenhuma seção encontrada na lista mais recente.</strong></p>
-            <p>Se você procurava a sua seção, ela não consta nessa lista. Confira estado, município, zona e seção no seu título de eleitor. {OFICIAL}</p>
+            <p>Se você procurava a sua seção, ela não consta nessa lista. Confira estado, município, zona e seção no seu título de eleitor. Algumas seções constaram em versões anteriores das listas e deixaram de constar nas atualizações. Não conseguimos confirmar se, nesses casos, o local de votação foi mantido, a mudança foi desfeita ou o registro foi corrigido. {OFICIAL}</p>
             <Button variant="contained" onClick={limparTudo}>Limpar busca</Button>
           </div>
         ) : (

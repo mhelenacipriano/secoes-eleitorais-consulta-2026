@@ -158,3 +158,6 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 .tabela-topo { border-bottom: 0; padding-bottom: 6px; } .tabela-card .resumo-tabela { border-top: 1px solid var(--line); }
 @media (max-width: 560px) { .pop-linha { grid-template-columns: 1fr auto; } .pop-linha > :first-child { grid-column: 1 / -1; } .btn-filtros { flex: 1 1 100%; } }
 @media (min-width: 761px) { .so-mobile { display: none !important; } }
+
+.banner.atencao { margin-top: 10px; border-color: var(--line); border-left: 4px solid var(--red); background: var(--panel); }
+.cartao-secao.nao .aviso { color: var(--fg2); }

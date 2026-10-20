@@ -13,6 +13,7 @@ export default function App() {
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
         <p className="banner" role="note"><strong>Informação mais recente.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções; a fonte não informa a data de publicação). As versões anteriores das listas não são usadas aqui — a comparação entre elas está na análise completa.</p>
+        <p className="banner atencao" role="note"><strong>Confirme sempre no e-Título.</strong> A lista pode ficar desatualizada, e seções que apareceram em versões anteriores e deixaram de constar na mais recente não têm garantia de que o local de votação seja o mesmo: não conseguimos confirmar se a mudança foi mantida, desfeita ou corrigida. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
         <header className="hero estreito">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
@@ -33,7 +34,7 @@ export default function App() {
           <div><p>Estão no seu <strong>título de eleitor</strong> (impresso ou digital) e no aplicativo <strong>e-Título</strong>.</p><p>Se a sua seção não aparece na busca, ela não consta na lista mais recente.</p></div>
         </details>
 
-        <p className="disclaimer" role="note">Esta consulta mostra apenas se a seção aparece na lista mais recente que analisamos. Não é uma fonte oficial: para confirmar o seu local de votação, use os canais da Justiça Eleitoral.</p>
+        <p className="disclaimer" role="note">Esta consulta mostra apenas se a seção aparece na lista mais recente que analisamos. Não é uma fonte oficial e a lista pode estar incompleta ou desatualizada: para confirmar o seu local de votação, use o e-Título, o Autoatendimento Eleitoral do TSE ou o site do TRE do seu estado.</p>
       </main>
 
       <footer className="foot">

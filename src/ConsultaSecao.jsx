@@ -5,7 +5,7 @@ import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
 
 const MAX_CARTOES = 5;
-const OFICIAL = 'Confirme o seu local de votação nos canais oficiais da Justiça Eleitoral (o TRE do seu estado ou o aplicativo e-Título) antes de ir votar.';
+const OFICIAL = 'Confirme o seu local de votação no aplicativo e-Título ou no Autoatendimento Eleitoral do TSE (ou no site do TRE do seu estado) antes de ir votar.';
 const lerUrl = () => { const p = new URLSearchParams(location.hash.replace(/^#\??/, '')); return { uf: p.get('uf') || '', mun: p.get('m') || '', zona: p.get('z') || '', secao: p.get('s') || '' }; };
 // a URL guarda a consulta (uf, m, z, s) junto com o estado da tabela (tq, tuf, ...)
 const gravarUrl = (c) => {
@@ -65,7 +65,7 @@ export default function ConsultaSecao({ dados, onVerLista }) {
           <article className="cartao-secao nao" role="status">
             <p className="selo neutro">Não consta na lista mais recente</p>
             <p>Nenhuma seção com esses dados está na lista mais recente. Confira estado, município, zona e seção no seu título de eleitor — se tudo estiver certo, a sua seção não consta nessa lista.</p>
-            <p className="aviso">Isso não é garantia de que o seu local de votação não mudou: só reflete a lista mais recente. {OFICIAL}</p>
+            <p className="aviso"><strong>Isso não é garantia de que o seu local de votação não mudou.</strong> Esta página só reflete a lista mais recente, que pode estar incompleta ou desatualizada. Algumas seções constaram em versões anteriores das listas e deixaram de constar nas atualizações. Não conseguimos confirmar se, nesses casos, o local de votação foi mantido, a mudança foi desfeita ou o registro foi corrigido. {OFICIAL}</p>
           </article>
         )}
         {achadas.length > 0 && (
