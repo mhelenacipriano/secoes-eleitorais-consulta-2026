@@ -407,3 +407,6 @@ html { scroll-behavior: smooth; }
 .mapa-leg .n1 { background: color-mix(in srgb, var(--red-solid) 14%, var(--panel)); } .mapa-leg .n2 { background: color-mix(in srgb, var(--red-solid) 30%, var(--panel)); } .mapa-leg .n3 { background: color-mix(in srgb, var(--red-solid) 50%, var(--panel)); } .mapa-leg .n4 { background: var(--red-solid); } .mapa-leg .n5 { background: color-mix(in srgb, var(--red-solid) 80%, #000); }
 .mapa-leg span:first-child { margin-right: 4px; } .mapa-leg span:last-child { margin-left: 4px; }
 @media (prefers-reduced-motion: reduce) { .uf { transition: none; } }
+
+/* a lista completa ocupa pelo menos uma tela, para o clique no mapa conseguir levar o título ao topo mesmo com poucas linhas */
+.lista-completa { min-height: calc(100vh - 72px); scroll-margin-top: 8px; }

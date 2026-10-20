@@ -37,8 +37,13 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
   const preenchido = Boolean(c.uf || c.mun.trim() || c.zona || c.secao);
   const completo = Boolean(c.uf && c.mun.trim() && c.zona && c.secao);
   const achadas = useMemo(() => (preenchido ? filtrar(dados.linhas, { ...VAZIO, ...c }) : []), [dados, c, preenchido]);
-  const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.municipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
-  const sugestoes = c.uf ? dados.municipios[c.uf] || [] : todosMunicipios;
+  const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.todosMunicipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
+  const sugestoes = c.uf ? dados.todosMunicipios[c.uf] || [] : todosMunicipios;
+  // só estado e/ou município (sem zona nem seção) e nada encontrado: diz que não há registro naquele local
+  const semZonaSecao = Boolean((c.uf || c.mun.trim()) && !c.zona && !c.secao && (!c.mun.trim() || sugestoes.some((m) => norm(m) === norm(c.mun))));
+  const local = [c.mun.trim() && c.mun.trim(), c.uf && (c.mun.trim() ? c.uf : nomeEstado(c.uf))].filter(Boolean).join(' · ');
+  // 5.500 cidades: filtra sem acento e mostra no máximo 80 por vez
+  const filtraMun = (ops, { inputValue }) => { const n = norm(inputValue); return (n ? ops.filter((m) => norm(m).includes(n)) : ops).slice(0, 80); };
   // registro anônimo da consulta: só depois de 1,5 s sem digitar, e o município só vai se for um nome da lista (nunca texto livre)
   useEffect(() => {
     const local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
@@ -63,11 +68,11 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
         <p>Preencha o que souber — estado, município, zona ou seção. Todos os campos são opcionais.</p>
       </div>
       <form className="form-linha" onSubmit={(e) => e.preventDefault()} noValidate>
-        <Autocomplete size="small" options={dados.ufs} value={c.uf || null} onChange={(_, v) => setC((x) => ({ ...x, uf: v || '', mun: '' }))}
+        <Autocomplete size="small" options={dados.todasUfs} value={c.uf || null} onChange={(_, v) => setC((x) => ({ ...x, uf: v || '', mun: '' }))}
           getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
           filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
           noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
-        <Autocomplete size="small" freeSolo options={sugestoes} inputValue={c.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
+        <Autocomplete size="small" freeSolo options={sugestoes} filterOptions={filtraMun} inputValue={c.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
           renderInput={(params) => <TextField {...params} label="Município" placeholder="Digite o município" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
         {campoNum('zona', 'Zona', 'Ex.: 12')}
         {campoNum('secao', 'Seção', 'Ex.: 345')}
@@ -81,6 +86,13 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
             <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm4.3 4.8-5.1 5.1-2.5-2.5-1.4 1.4 3.9 3.9 6.5-6.5-1.4-1.4Z" fill="currentColor" /></svg>
             <p className="vazio-tit">Segundo a última atualização do TSE, a sua seção não consta como alterada</p>
             <p className="vazio-txt">Não há mudança de local de votação registrada para {c.mun.trim()} · {c.uf}, zona {Number(c.zona)}, seção {Number(c.secao)}, na versão mais recente da lista divulgada pelo TSE.</p>
+            <p className="vazio-nota"><strong>Mesmo assim, confirme no e-Título.</strong> A lista pode estar desatualizada ou incompleta, e isso não garante que o local de votação seja o mesmo. Use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE antes de ir votar.</p>
+          </div>
+        ) : semZonaSecao ? (
+          <div className="vazio-res" role="status">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm4.3 4.8-5.1 5.1-2.5-2.5-1.4 1.4 3.9 3.9 6.5-6.5-1.4-1.4Z" fill="currentColor" /></svg>
+            <p className="vazio-tit">Sem registro de seções alteradas em {local}</p>
+            <p className="vazio-txt">Na versão mais recente da lista do TSE, não consta nenhuma seção com mudança de local de votação {c.mun.trim() ? 'neste município' : 'neste estado'}.</p>
             <p className="vazio-nota"><strong>Mesmo assim, confirme no e-Título.</strong> A lista pode estar desatualizada ou incompleta, e isso não garante que o local de votação seja o mesmo. Use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE antes de ir votar.</p>
           </div>
         ) : (

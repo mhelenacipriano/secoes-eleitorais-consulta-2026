@@ -13,8 +13,8 @@ export default function App() {
   const [avisoAberto, setAvisoAberto] = useState(false);
   const [ufSel, setUfSel] = useState('');
   const [forcarUf, setForcarUf] = useState(null);
-  // clique no mapa: preenche o campo Estado da consulta e filtra a tabela (sem rolar a página)
-  const escolherUf = (uf) => { setForcarUf((x) => ({ n: (x?.n || 0) + 1, uf })); setExterno((x) => ({ n: (x?.n || 0) + 1, filtros: { uf }, semRolar: true })); };
+  // clique no mapa: preenche o campo Estado da consulta e leva à lista completa já filtrada (desmarcar só limpa)
+  const escolherUf = (uf) => { setForcarUf((x) => ({ n: (x?.n || 0) + 1, uf })); setExterno((x) => ({ n: (x?.n || 0) + 1, filtros: { uf }, semRolar: !uf, semDestaque: true })); };
   return (
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>

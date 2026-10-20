@@ -56,11 +56,13 @@ export default function BuscaSecoes({ dados, externo }) {
     if (!externo?.n) return undefined;
     setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros });
     setDestaque(false);
-    if (externo.semRolar) return undefined;   // vindo do mapa: só filtra, sem rolar nem destacar
-    (celular ? tabelaRef : secaoRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (externo.semRolar) return undefined;   // estado desmarcado no mapa: só limpa o filtro, sem rolar
+    // espera a tabela re-renderizar já filtrada: rolar antes mira a posição da tabela inteira (muito mais alta)
+    const rola = setTimeout(() => (celular ? tabelaRef : secaoRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+    if (externo.semDestaque) return () => clearTimeout(rola); // vindo do mapa: rola até a lista completa já filtrada, sem destacar linhas
     const entra = setTimeout(() => setDestaque(true), 450);   // espera a rolagem para o fade-in ser visto
     const sai = setTimeout(() => setDestaque(false), 3600);
-    return () => { clearTimeout(entra); clearTimeout(sai); };
+    return () => { clearTimeout(rola); clearTimeout(entra); clearTimeout(sai); };
   }, [externo]);
 
   const filtradas = useMemo(() => filtrar(dados.linhas, f), [dados, f]);
