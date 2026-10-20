@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Autocomplete, Button, Chip, IconButton, InputAdornment, Pagination, Popover, TextField } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
@@ -40,16 +40,22 @@ export default function BuscaSecoes({ dados, externo }) {
   const [pag, setPag] = useState(0);
   const [tam, setTam] = useState(25);
   const [ancora, setAncora] = useState(null);
+  const [destaque, setDestaque] = useState(false);
+  const secaoRef = useRef(null);
   const [campos, setCampos] = useState(() => CHAVES_FILTRO.filter((k) => lerFiltros()[k]));
   const set = (k, v) => { setPag(0); setF((x) => ({ ...x, [k]: v })); };
   const ativosChaves = CHAVES_FILTRO.filter((k) => f[k] !== '');
   const filtrosAtivos = ativosChaves.length;
   useEffect(() => { gravarFiltros(f); }, [f]);
-  // "Ver todas na lista completa", vindo da consulta: aplica os campos e leva o leitor até a tabela
+  // "Ver todas na lista completa", vindo da consulta: substitui busca e filtros pelos da consulta (os anteriores são
+  // limpos para a tabela mostrar exatamente o resultado), rola até a seção e a destaca por alguns segundos
   useEffect(() => {
-    if (!externo?.n) return;
-    setPag(0); setF({ ...VAZIO, ...externo.filtros }); setCampos(CHAVES_FILTRO.filter((k) => externo.filtros[k]));
-    document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' });
+    if (!externo?.n) return undefined;
+    setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros }); setCampos(CHAVES_FILTRO.filter((k) => externo.filtros[k]));
+    secaoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setDestaque(true);
+    const t = setTimeout(() => setDestaque(false), 3200);
+    return () => clearTimeout(t);
   }, [externo]);
 
   const filtradas = useMemo(() => filtrar(dados.linhas, f), [dados, f]);
@@ -98,7 +104,7 @@ export default function BuscaSecoes({ dados, externo }) {
   };
 
   return (
-    <section className="lista-completa" aria-labelledby="titulo-lista">
+    <section ref={secaoRef} className={`lista-completa${destaque ? ' destaque' : ''}`} aria-labelledby="titulo-lista">
       <header className="sec-cab">
         <p className="eyebrow">Lista completa</p>
         <h2 id="titulo-lista">Veja a lista completa e explore</h2>
