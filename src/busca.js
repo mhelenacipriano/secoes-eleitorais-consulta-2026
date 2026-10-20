@@ -10,7 +10,7 @@ export function useDados() {
     fetch('./secoes.json')
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error('Erro ' + r.status))))
       .then(({ dados }) => {
-        const linhas = dados.map(([uf, municipio, zona, secao, localInicial, localFinal, listas]) => ({ uf, municipio, mun: norm(municipio), zona, secao, localInicial, localFinal, listas }));
+        const linhas = dados.map(([uf, municipio, zona, secao, localInicial, localFinal, listas]) => ({ uf, municipio, mun: norm(municipio), zona, secao, localInicial, localFinal, ini: norm(localInicial), fin: norm(localFinal), listas, hay: norm(`${uf} ${municipio} zona ${zona} secao ${secao} ${localInicial} ${localFinal}`) }));
         const ufs = [...new Set(linhas.map((l) => l.uf))].sort();
         const municipios = {};
         for (const l of linhas) (municipios[l.uf] ||= new Set()).add(l.municipio);
