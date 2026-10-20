@@ -1,6 +1,6 @@
 # Sua seção eleitoral mudou? · Consulta 2026
 
-Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta nas quatro listas de locais de votação alterados analisadas para o 2º turno de 2026, com o local inicial e o final.
+Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (438 seções; a fonte não informa a data), com o local inicial e o final. Abaixo da consulta há a lista completa, com busca e filtro em todas as colunas (nenhum obrigatório) e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
 
 Complementa a [análise completa](https://github.com/mhelenacipriano/secoes-eleitorais-analise): o rodapé tem o botão **Análise completa**.
 
@@ -14,7 +14,7 @@ npm run build    # gera dist/ (hospedagem estática, base relativa)
 
 ## Dados
 
-`public/secoes.json` é gerado do CSV do projeto de análise e contém só o necessário para a consulta (UF, município, zona, seção, local inicial/final e em quais listas a seção aparece). Não há votos nem número de eleitores.
+`public/secoes.json` é gerado do CSV do projeto de análise e contém só as seções da lista mais recente, com o necessário para a consulta (UF, município, zona, seção, local inicial e final). Não há votos nem número de eleitores.
 
 ```bash
 npm run dados -- caminho/para/secoes_v.csv
