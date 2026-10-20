@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { ANALISE_URL, LISTAS } from './config.js';
 import { procurar, useDados } from './busca.js';
+import ThemeToggle from './ThemeToggle.jsx';
+import ShareButton from './ShareButton.jsx';
 
 const lerHash = () => {
   const p = new URLSearchParams(location.hash.replace(/^#\??/, ''));
@@ -14,6 +16,7 @@ const gravarHash = (f) => {
   if (f.secao) p.set('s', f.secao);
   history.replaceState(null, '', p.toString() ? '#' + p.toString() : location.pathname + location.search);
 };
+const naoNum = (v) => v !== '' && !/^\d+$/.test(v);
 const completo = (f) => f.uf && f.municipio.trim() && Number(f.zona) > 0 && Number(f.secao) > 0;
 
 function situacao(mask) {
@@ -26,7 +29,7 @@ function situacao(mask) {
 const OFICIAL = 'Confirme o seu local de votação nos canais oficiais da Justiça Eleitoral (o TRE do seu estado ou o aplicativo e-Título) antes de ir votar.';
 const AVISO = `Constar em uma lista não significa, por si só, que o seu local de votação foi alterado: as listas foram revisadas várias vezes e podem conter registros corrigidos ou reclassificados. ${OFICIAL}`;
 
-function Resultado({ r, f }) {
+function Resultado({ r, f, outra }) {
   if (r.tipo === 'achou') {
     const s = r.secao, igual = s.localInicial === s.localFinal;
     return (
@@ -45,6 +48,7 @@ function Resultado({ r, f }) {
           <div><dt>Local final</dt><dd>{s.localFinal}{igual && <small> — igual ao local inicial nos registros</small>}</dd></div>
         </dl>
         <p className="aviso">{AVISO}</p>
+        <div className="res-acoes"><ShareButton className="btn" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta nas listas de locais de votação alterados.">Compartilhar esta consulta</ShareButton><button type="button" className="btn" onClick={outra}>Consultar outra seção</button></div>
       </section>
     );
   }
@@ -56,6 +60,7 @@ function Resultado({ r, f }) {
         ? `Há ${r.secoesNoMunicipio} seções deste município nas listas, mas não esta combinação de zona e seção. Confira os números no seu título de eleitor.`
         : 'Nenhuma seção deste município consta nas listas analisadas. Confira se o nome do município está certo (escolha uma sugestão da lista, se houver).'}</p>
       <p className="aviso">Isso não é garantia de que o seu local de votação não mudou: só reflete as listas analisadas. {OFICIAL}</p>
+      <div className="res-acoes"><button type="button" className="btn" onClick={outra}>Consultar outra seção</button></div>
     </section>
   );
 }
@@ -73,21 +78,23 @@ export default function App() {
   useEffect(() => { if (resultado) document.getElementById('resultado')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }, [resultado]);
 
   const enviar = (e) => { e.preventDefault(); if (ok) setConsultado(true); };
-  const limpar = () => { setF({ uf: '', municipio: '', zona: '', secao: '' }); setConsultado(false); history.replaceState(null, '', location.pathname + location.search); };
+  const limpar = () => { setF({ uf: '', municipio: '', zona: '', secao: '' }); setConsultado(false); history.replaceState(null, '', location.pathname + location.search); document.getElementById('campo-uf')?.focus(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
 
   return (
     <div className="app">
+      <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
         <header className="hero">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
           <p className="sub">Consulte se a sua seção consta nas listas de locais de votação alterados que analisamos. Você precisa de estado, município, zona e seção — todos estão no seu título de eleitor.</p>
+          <ol className="passos" aria-label="Como funciona"><li><b>1</b> Informe sua seção</li><li><b>2</b> Consulte</li><li><b>3</b> Confirme no canal oficial</li></ol>
         </header>
 
         {erro && <p className="erro" role="alert">Não foi possível carregar os dados ({erro.message}). Tente recarregar a página.</p>}
         <form className="form" onSubmit={enviar} noValidate>
           <label>Estado
-            <select value={f.uf} onChange={set('uf')} required disabled={!dados}>
+            <select id="campo-uf" value={f.uf} onChange={set('uf')} required disabled={!dados}>
               <option value="">{dados ? 'Escolha o estado' : 'Carregando…'}</option>
               {dados?.ufs.map((u) => <option key={u} value={u}>{u === 'ZZ' ? 'ZZ (exterior)' : u}</option>)}
             </select>
@@ -98,10 +105,12 @@ export default function App() {
           </label>
           <div className="duas">
             <label>Zona
-              <input inputMode="numeric" pattern="[0-9]*" value={f.zona} onChange={set('zona')} placeholder="Ex.: 12" />
+              <input inputMode="numeric" pattern="[0-9]*" value={f.zona} onChange={set('zona')} placeholder="Ex.: 12" aria-invalid={naoNum(f.zona)} />
+              {naoNum(f.zona) && <span className="campo-erro" role="alert">Use só números.</span>}
             </label>
             <label>Seção
-              <input inputMode="numeric" pattern="[0-9]*" value={f.secao} onChange={set('secao')} placeholder="Ex.: 345" />
+              <input inputMode="numeric" pattern="[0-9]*" value={f.secao} onChange={set('secao')} placeholder="Ex.: 345" aria-invalid={naoNum(f.secao)} />
+              {naoNum(f.secao) && <span className="campo-erro" role="alert">Use só números.</span>}
             </label>
           </div>
           <div className="acoes">
@@ -110,7 +119,12 @@ export default function App() {
           </div>
         </form>
 
-        {resultado && <Resultado r={resultado} f={f} />}
+        <details className="ajuda">
+          <summary>Onde encontro a zona e a seção?</summary>
+          <div><p>Estão no seu <strong>título de eleitor</strong> (impresso ou digital) e no aplicativo <strong>e-Título</strong>.</p><p>Se o nome do município não aparecer nas sugestões, ele não consta nas listas analisadas.</p></div>
+        </details>
+
+        {resultado && <Resultado r={resultado} f={f} outra={limpar} />}
 
         <p className="disclaimer" role="note">Esta consulta mostra apenas se a seção aparece nas listas que analisamos. Não é uma fonte oficial: para confirmar o seu local de votação, use os canais da Justiça Eleitoral.</p>
       </main>
