@@ -200,3 +200,14 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 @media (prefers-reduced-motion: reduce) { .lista-completa::before { transition: none; } }
 
 .banner p + p { margin-top: 4px; } .banner a, .foot .legal a { color: var(--red); text-decoration: underline; text-underline-offset: 2px; }
+
+/* rodapé da tabela: contagem à esquerda, paginação no centro, download à direita */
+.tabela-card .paginacao { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px 16px; }
+.tabela-card .paginacao .mostrando { justify-self: start; font-size: .78rem; color: var(--muted); }
+.tabela-card .paginacao .pag-ctl { justify-self: center; justify-content: center; }
+.tabela-card .paginacao .baixar { justify-self: end; }
+@media (max-width: 900px) {
+  .tabela-card .paginacao { grid-template-columns: 1fr auto; grid-template-areas: "pag pag" "cont baixar"; }
+  .tabela-card .paginacao .pag-ctl { grid-area: pag; justify-self: stretch; justify-content: space-between; }
+  .tabela-card .paginacao .mostrando { grid-area: cont; } .tabela-card .paginacao .baixar { grid-area: baixar; min-height: 40px; }
+}

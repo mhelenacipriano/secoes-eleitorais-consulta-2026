@@ -194,17 +194,17 @@ export default function BuscaSecoes({ dados, externo }) {
 
         {ordenadas.length > 0 && (
           <div className="paginacao">
-            <button type="button" className="link-acao baixar" onClick={baixar} title={`Baixa as ${ordenadas.length.toLocaleString('pt-BR')} seções do resultado atual (com a busca e os filtros aplicados) em CSV`}>
-              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v11.2l4.1-4.1 1.4 1.4L12 17l-5.5-5.5 1.4-1.4 4.1 4.1V3h2ZM5 19h14v2H5v-2Z" fill="currentColor" /></svg>
-              Baixar tabela
-            </button>
+            <span className="mostrando">Mostrando {p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
             <div className="pag-ctl">
               <TextField select size="small" label="Linhas por página" value={tam} onChange={(e) => { setTam(Number(e.target.value)); setPag(0); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
                 {[25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
               </TextField>
-              <span className="mostrando">Mostrando {p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
               <Pagination count={paginas} page={p + 1} onChange={(_, v) => { setPag(v - 1); document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' }); }} color="primary" shape="rounded" siblingCount={0} boundaryCount={1} aria-label="Paginação da tabela" />
             </div>
+            <button type="button" className="link-acao baixar" onClick={baixar} title={`Baixa as ${ordenadas.length.toLocaleString('pt-BR')} seções do resultado atual (com a busca e os filtros aplicados) em CSV`}>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v11.2l4.1-4.1 1.4 1.4L12 17l-5.5-5.5 1.4-1.4 4.1 4.1V3h2ZM5 19h14v2H5v-2Z" fill="currentColor" /></svg>
+              Baixar tabela
+            </button>
           </div>
         )}
       </div>
