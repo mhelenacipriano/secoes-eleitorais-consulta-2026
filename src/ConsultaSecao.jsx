@@ -68,9 +68,9 @@ export default function ConsultaSecao({ dados, onVerLista }) {
           <div className="res-box">
             <div className="res-cab">
               <span className="selo">{achadas.length === 1 ? 'Consta' : 'Constam'} na lista mais recente divulgada pelo TSE <LinkFonte /></span>
-              <span className="res-conta"><strong>{achadas.length.toLocaleString('pt-BR')}</strong> {achadas.length === 1 ? 'seção' : 'seções'}</span>
+              <span className="res-conta"><strong>{achadas.length.toLocaleString('pt-BR')}</strong> {achadas.length === 1 ? 'seção encontrada' : 'seções encontradas'}</span>
               <span className="res-cab-acoes">
-                {achadas.length > MAX_LINHAS && <button type="button" className="link-acao destaque" onClick={() => onVerLista({ uf: c.uf, mun: c.mun, zona: c.zona, secao: c.secao })}>Ver as {achadas.length.toLocaleString('pt-BR')} na lista completa ↓</button>}
+                <button type="button" className="link-acao destaque" onClick={() => onVerLista({ uf: c.uf, mun: c.mun, zona: c.zona, secao: c.secao })}>{achadas.length > MAX_LINHAS ? `Ver as ${achadas.length.toLocaleString('pt-BR')} na lista completa ↓` : 'Ver na lista completa ↓'}</button>
                 <ShareButton className="link-acao" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Compartilhar</ShareButton>
               </span>
             </div>

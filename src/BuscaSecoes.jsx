@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Autocomplete, Button, Chip, IconButton, InputAdornment, Pagination, Popover, TextField } from '@mui/material';
+import { Autocomplete, Button, Chip, Drawer, IconButton, InputAdornment, Pagination, Popover, TextField, useMediaQuery } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
@@ -42,20 +42,23 @@ export default function BuscaSecoes({ dados, externo }) {
   const [ancora, setAncora] = useState(null);
   const [destaque, setDestaque] = useState(false);
   const secaoRef = useRef(null);
+  const tabelaRef = useRef(null);
+  const celular = useMediaQuery('(max-width:760px)');
   const [campos, setCampos] = useState(() => CHAVES_FILTRO.filter((k) => lerFiltros()[k]));
   const set = (k, v) => { setPag(0); setF((x) => ({ ...x, [k]: v })); };
   const ativosChaves = CHAVES_FILTRO.filter((k) => f[k] !== '');
   const filtrosAtivos = ativosChaves.length;
   useEffect(() => { gravarFiltros(f); }, [f]);
-  // "Ver todas na lista completa", vindo da consulta: substitui busca e filtros pelos da consulta (os anteriores são
-  // limpos para a tabela mostrar exatamente o resultado), rola até a seção e a destaca por alguns segundos
+  // "Ver na lista completa", vindo da consulta: substitui busca e filtros pelos da consulta (os anteriores são
+  // limpos para a tabela mostrar exatamente o resultado), rola até a tabela e destaca a(s) linha(s) por alguns segundos
   useEffect(() => {
     if (!externo?.n) return undefined;
     setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros }); setCampos(CHAVES_FILTRO.filter((k) => externo.filtros[k]));
-    secaoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setDestaque(true);
-    const t = setTimeout(() => setDestaque(false), 3200);
-    return () => clearTimeout(t);
+    setDestaque(false);
+    (celular ? tabelaRef : secaoRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const entra = setTimeout(() => setDestaque(true), 450);   // espera a rolagem para o fade-in ser visto
+    const sai = setTimeout(() => setDestaque(false), 3600);
+    return () => { clearTimeout(entra); clearTimeout(sai); };
   }, [externo]);
 
   const filtradas = useMemo(() => filtrar(dados.linhas, f), [dados, f]);
@@ -104,22 +107,22 @@ export default function BuscaSecoes({ dados, externo }) {
   };
 
   return (
-    <section ref={secaoRef} className={`lista-completa${destaque ? ' destaque' : ''}`} aria-labelledby="titulo-lista">
+    <section ref={secaoRef} className="lista-completa" aria-labelledby="titulo-lista">
       <header className="sec-cab">
         <p className="eyebrow">Lista completa</p>
         <h2 id="titulo-lista">Veja a lista completa e explore</h2>
         <p className="sub">Busque por palavra-chave, filtre por campo e ordene as colunas. Você pode baixar a tabela com os filtros aplicados.</p>
       </header>
-      <div className="tabela-card">
+      <div className="tabela-card" ref={tabelaRef}>
         <div className="tabela-topo">
           <div className="toolbar">
-            <TextField id="busca-geral" type="search" fullWidth className="busca-campo" placeholder="Buscar por cidade, estado, local, zona ou seção" value={f.q} onChange={(e) => set('q', e.target.value)}
+            <TextField id="busca-geral" type="search" fullWidth className="busca-campo" placeholder="Cidade, estado, local, zona…" value={f.q} onChange={(e) => set('q', e.target.value)}
               slotProps={{ htmlInput: { 'aria-label': 'Buscar' }, input: { startAdornment: <InputAdornment position="start"><Lupa /></InputAdornment> } }} />
             <Button className="btn-filtros" variant="outlined" color="inherit" startIcon={<IconeFiltro />} aria-haspopup="dialog" aria-expanded={Boolean(ancora)} onClick={(e) => setAncora(e.currentTarget)}>
               Filtros{filtrosAtivos > 0 && <span className="count">{filtrosAtivos}</span>}
             </Button>
           </div>
-          <p className="dica-busca">Tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Todos os campos são opcionais: use a busca para refinar os resultados.</p>
+          <p className="dica-busca"><span className="so-desktop">Tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Todos os campos são opcionais: use a busca para refinar os resultados.</span><span className="so-celular">Tente “Rio Grande do Sul” ou “Z23 S370”. Use a busca para refinar.</span></p>
           {(filtrosAtivos > 0 || f.q !== '') && (
             <div className="chips-ativos" aria-label="Filtros aplicados">
               {f.q !== '' && <Chip size="small" variant="outlined" label={`Busca: “${f.q}”`} onDelete={() => set('q', '')} />}
@@ -129,8 +132,9 @@ export default function BuscaSecoes({ dados, externo }) {
           )}
         </div>
 
-        <Popover open={Boolean(ancora)} anchorEl={ancora} onClose={() => setAncora(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-          slotProps={{ paper: { className: 'filtros-popover', role: 'dialog', 'aria-label': 'Filtros por campo' } }}>
+        {celular ? (
+          <Drawer anchor="bottom" open={Boolean(ancora)} onClose={() => setAncora(null)} slotProps={{ paper: { className: 'folha-filtros', role: 'dialog', 'aria-label': 'Filtros por campo' } }}>
+            <div className="folha-alca" aria-hidden="true" />
           <div className="pop-topo"><strong>Filtros</strong>{filtrosAtivos > 0 && <button type="button" className="link-acao" onClick={limparTudo}>Limpar filtros</button>}</div>
           {campos.length === 0 && <p className="pop-vazio">Nenhum filtro aplicado. Adicione um para refinar por estado, município, zona, seção ou local.</p>}
           {campos.map((k) => (
@@ -147,7 +151,28 @@ export default function BuscaSecoes({ dados, externo }) {
             {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
           </TextField>
           <div className="pop-rodape"><span>{ordenadas.length.toLocaleString('pt-BR')} seções</span><Button variant="contained" size="small" onClick={() => setAncora(null)}>Concluir</Button></div>
-        </Popover>
+          </Drawer>
+        ) : (
+          <Popover open={Boolean(ancora)} anchorEl={ancora} onClose={() => setAncora(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            slotProps={{ paper: { className: 'filtros-popover', role: 'dialog', 'aria-label': 'Filtros por campo' } }}>
+          <div className="pop-topo"><strong>Filtros</strong>{filtrosAtivos > 0 && <button type="button" className="link-acao" onClick={limparTudo}>Limpar filtros</button>}</div>
+          {campos.length === 0 && <p className="pop-vazio">Nenhum filtro aplicado. Adicione um para refinar por estado, município, zona, seção ou local.</p>}
+          {campos.map((k) => (
+            <div className="pop-linha" key={k}>
+              <TextField select size="small" value={k} onChange={(e) => trocarCampo(k, e.target.value)} slotProps={{ select: { native: true }, htmlInput: { 'aria-label': 'Campo do filtro' } }}>
+                {CHAVES_FILTRO.filter((c) => c === k || !campos.includes(c)).map((c) => <option key={c} value={c}>{CAMPOS[c].rotulo}</option>)}
+              </TextField>
+              <div className="pop-valor">{editor(k)}</div>
+              <IconButton aria-label={`Remover filtro ${CAMPOS[k].rotulo}`} onClick={() => limparCampo(k)} size="small"><IconeLixo /></IconButton>
+            </div>
+          ))}
+          {campos.length < CHAVES_FILTRO.length && <button type="button" className="pop-add" onClick={adicionarCampo}><span aria-hidden="true">+</span> Adicionar filtro</button>}
+          <TextField select size="small" className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
+            {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
+          </TextField>
+          <div className="pop-rodape"><span>{ordenadas.length.toLocaleString('pt-BR')} seções</span><Button variant="contained" size="small" onClick={() => setAncora(null)}>Concluir</Button></div>
+          </Popover>
+        )}
 
         <div className="resumo-tabela" aria-live="polite">
           <span><strong>{ordenadas.length.toLocaleString('pt-BR')}</strong> de {dados.linhas.length.toLocaleString('pt-BR')} seções{filtrando ? ' encontradas' : ' na lista mais recente divulgada pelo TSE'} <LinkFonte /></span>
@@ -178,14 +203,15 @@ export default function BuscaSecoes({ dados, externo }) {
               </thead>
               <tbody>
                 {visiveis.map((l) => (
-                  <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`}>
-                    <td data-label="Estado"><span className="pill">{l.uf}</span> {l.estado}</td>
-                    <td data-label="Município">{l.municipio}</td>
-                    <td data-label="Zona" className="num">{l.zona}</td>
-                    <td data-label="Seção" className="num">{l.secao}</td>
-                    <td data-label="Onde votava">{l.ondeVotava}</td>
-                    <td data-label="Onde vai votar">{l.ondeVaiVotar}</td>
-                    <td data-label="Eleitores" className="num">{l.eleitores.toLocaleString('pt-BR')}</td>
+                  <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`} className={destaque ? 'linha-destaque' : undefined}>
+                    <td data-label="Estado" className="c-estado"><span className="pill">{l.uf}</span><span className="estado-nome"> {l.estado}</span></td>
+                    <td data-label="Município" className="c-mun">{l.municipio}</td>
+                    <td data-label="Zona" className="num c-zona">{l.zona}</td>
+                    <td data-label="Seção" className="num c-secao">{l.secao}</td>
+                    <td className="c-zs" aria-hidden="true">Zona {l.zona} · Seção {l.secao}</td>
+                    <td data-label="Onde votava" className="c-loc c-ini">{l.ondeVotava}</td>
+                    <td data-label="Onde vai votar" className="c-loc c-fin">{l.ondeVaiVotar}</td>
+                    <td data-label="Eleitores" className="num c-eleit">{l.eleitores.toLocaleString('pt-BR')}</td>
                   </tr>
                 ))}
               </tbody>
