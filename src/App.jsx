@@ -47,7 +47,7 @@ export default function App() {
       <footer className="foot">
         {MOSTRAR_ANALISE && (
           <>
-            <p>Quer entender o que mudou nas listas e o que isso pode (ou não) significar?</p>
+            <p className="foot-cta">Quer entender o que mudou nas listas e o que isso pode (ou não) significar?</p>
             <a className="btn primary big" href={ANALISE_URL}>Análise completa →</a>
             <p className="note">Os dados mostram o perfil das listas, não comprovam mudanças no resultado da eleição.</p>
           </>
