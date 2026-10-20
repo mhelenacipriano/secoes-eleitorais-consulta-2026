@@ -47,9 +47,10 @@ export default function App() {
       <footer className="foot">
         {MOSTRAR_ANALISE && (
           <div className="cta-analise">
-            <p className="foot-cta">Quer entender o que mudou nas listas e o que isso pode (ou não) significar?</p>
+            <p className="foot-cta">Quer entender o que mudou nas listas do TSE?</p>
+            <p className="cta-texto">O TSE divulgou três listas com as seções eleitorais cujo local de votação mudou para o 2º turno. Na análise completa, fazemos um panorama geral desses dados: quantas seções saíram e entraram em cada lista e como elas votaram no 1º turno.</p>
             <a className="btn primary big" href={ANALISE_URL}>Análise completa →</a>
-            <p className="note">Os dados mostram o perfil das listas, não comprovam mudanças no resultado da eleição.</p>
+            <p className="note">É um retrato dos dados, não uma prova de que o resultado da eleição mudou.</p>
           </div>
         )}
         <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas divulgadas pela Justiça Eleitoral; a lista mais recente usada nesta busca vem do <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Seções alteradas do SIG/TSE</a>. As comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
