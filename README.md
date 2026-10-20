@@ -39,3 +39,16 @@ Claro e escuro com alternância no topo (segue o sistema na primeira visita). Id
 ## Deploy na Vercel
 
 Site estático: importe o repositório em vercel.com/new (a Vercel detecta Vite: build `npm run build`, saída `dist`). Em Settings → Environment Variables, defina `VITE_ANALISE_URL` com o endereço publicado da análise completa e faça um novo deploy (variáveis `VITE_` entram no build).
+
+## Contador de acessos (página escondida)
+
+Contagem anônima (sem cookies, sem IP, sem dados pessoais): acessos no total, por dia e quem está no site agora. Só você vê, em `/#estatisticas`, com uma senha.
+
+Como ligar na Vercel:
+
+1. No projeto da Vercel: **Storage → Create Database → Upstash (Redis)** (plano gratuito) e **Connect Project**. Isso cria as variáveis `KV_REST_API_URL` e `KV_REST_API_TOKEN` (ou `UPSTASH_REDIS_REST_URL`/`TOKEN`).
+2. **Settings → Environment Variables**: crie `STATS_TOKEN` com a senha que você quiser (Production).
+3. Faça um novo deploy (Deployments → ⋯ → Redeploy).
+4. Abra `https://SEU-SITE/#estatisticas` e entre com a senha.
+
+Sem essas variáveis o site funciona normalmente e o contador fica desligado. Não conta em desenvolvimento nem na própria página de estatísticas. Código: `api/` (funções), `src/contador.js` (envio) e `src/Estatisticas.jsx` (painel).
