@@ -418,15 +418,16 @@ html { scroll-behavior: smooth; }
 
 /* ---- chamada para a estrela: pulinho, dica escrita à mão e chuva de estrelinhas ---- */
 @font-face { font-family: "Caveat"; src: url("/fonts/caveat-latin.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
-.curtida .dica-escrita { position: absolute; right: 38px; bottom: 40px; display: block; font-family: "Caveat", "Segoe Print", "Bradley Hand", cursive; font-weight: 600; font-size: 1.5rem; line-height: 1; white-space: nowrap; color: var(--red); transform: rotate(-7deg); transform-origin: right bottom; pointer-events: none;
-  text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 9px var(--bg); animation: dica-entra .5s .2s cubic-bezier(.3, 1.4, .5, 1) both; }
-.curtida .dica-escrita .seta { position: absolute; right: -30px; top: 10px; width: 36px; height: 40px; overflow: visible; transform: rotate(7deg); }
-@keyframes dica-entra { from { opacity: 0; transform: rotate(-7deg) translateY(8px) scale(.9); } to { opacity: 1; transform: rotate(-7deg); } }
+.curtida .dica-escrita { position: absolute; right: 6px; bottom: 37px; display: flex; align-items: flex-start; gap: 0; color: var(--red); pointer-events: none; animation: dica-entra .5s .2s cubic-bezier(.3, 1.4, .5, 1) both; }
+/* a seta fica sempre centrada sobre a estrela (a estrela tem 34 px e fica a 6 px da borda), com a ponta logo acima do topo dela; o texto fica à esquerda */
+.curtida .dica-texto { font-family: "Caveat", "Segoe Print", "Bradley Hand", cursive; font-weight: 600; font-size: 1.5rem; line-height: 1; white-space: nowrap; transform: rotate(-7deg); transform-origin: right bottom; margin-right: 4px; margin-top: 2px; text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 9px var(--bg); }
+.curtida .dica-escrita .seta { width: 34px; height: 36px; flex: none; overflow: visible; filter: drop-shadow(0 0 3px var(--bg)); }
+@keyframes dica-entra { from { opacity: 0; transform: translateY(8px) scale(.92); } to { opacity: 1; transform: none; } }
 .curtida.pulo .estrela { animation: curtida-pulo .9s ease-in-out; }
 @keyframes curtida-pulo { 0%, 100% { transform: scale(1) rotate(0); } 18% { transform: scale(1.35) rotate(-14deg); } 36% { transform: scale(1.1) rotate(10deg); } 54% { transform: scale(1.28) rotate(-8deg); } 76% { transform: scale(1.05) rotate(3deg); } }
 .chuva { position: fixed; inset: 0; z-index: 60; overflow: hidden; pointer-events: none; }
 .chuva-estrela { position: absolute; top: -40px; height: auto; opacity: 0; animation: chuva-cai 3s linear forwards; }
 @keyframes chuva-cai { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 6% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx), calc(100vh + 60px)) rotate(var(--rot)); opacity: 0; } }
-@media (max-width: 520px) { .curtida .dica-escrita { font-size: 1.35rem; right: 34px; bottom: 38px; } .curtida .dica-escrita .seta { top: 3px; right: -28px; } }
+@media (max-width: 520px) { .curtida .dica-texto { font-size: 1.35rem; } }
 @media (prefers-reduced-motion: reduce) { .curtida.pulo .estrela, .curtida .dica-escrita { animation: none !important; } .chuva { display: none; } }
 @media print { .chuva, .curtida .dica-escrita { display: none !important; } }
