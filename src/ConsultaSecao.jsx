@@ -2,17 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Autocomplete, Button, TextField } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
+import { gravarParams, lerParams } from './url.js';
 import ShareButton from './ShareButton.jsx';
 import LinkFonte from './LinkFonte.jsx';
 
 const MAX_LINHAS = 5;
-const lerUrl = () => { const p = new URLSearchParams(location.hash.replace(/^#\??/, '')); return { uf: p.get('uf') || '', mun: p.get('m') || '', zona: p.get('z') || '', secao: p.get('s') || '' }; };
-// a URL guarda a consulta (uf, m, z, s) junto com o estado da tabela (tq, tuf, ...)
-const gravarUrl = (c) => {
-  const p = new URLSearchParams(location.hash.replace(/^#\??/, ''));
-  for (const [k, ch] of [['uf', 'uf'], ['mun', 'm'], ['zona', 'z'], ['secao', 's']]) { if (c[k]) p.set(ch, c[k]); else p.delete(ch); }
-  history.replaceState(null, '', p.toString() ? '#' + p.toString() : location.pathname + location.search);
-};
+const lerUrl = () => { const p = lerParams(); return { uf: p.get('uf') || '', mun: p.get('m') || '', zona: p.get('z') || '', secao: p.get('s') || '' }; };
+// a query guarda a consulta (uf, m, z, s) junto com o estado da tabela (tq, tuf, ...)
+const gravarUrl = (c) => gravarParams({ uf: c.uf, m: c.mun, z: c.zona, s: c.secao });
 
 function Linha({ l }) {
   const igual = l.ondeVotava === l.ondeVaiVotar;

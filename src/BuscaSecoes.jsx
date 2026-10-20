@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Autocomplete, Button, Chip, Drawer, InputAdornment, Pagination, Popover, TextField, useMediaQuery } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
+import { gravarParams, lerParams } from './url.js';
 import ShareButton from './ShareButton.jsx';
 import LinkFonte from './LinkFonte.jsx';
 
@@ -13,13 +14,15 @@ const CAMPOS = { uf: { rotulo: 'Estado', tipo: 'estado' }, mun: { rotulo: 'Munic
 const CHAVES_FILTRO = Object.keys(CAMPOS);
 
 export const lerFiltros = () => {
-  const p = new URLSearchParams(location.hash.replace(/^#\??/, ''));
+  const p = lerParams();
   return Object.fromEntries(Object.entries(CHAVES_URL).map(([k, c]) => [k, p.get(c) || '']));
 };
-const gravarFiltros = (f) => {
-  const p = new URLSearchParams();
-  for (const [k, c] of Object.entries(CHAVES_URL)) if (f[k]) p.set(c, f[k]);
-  history.replaceState(null, '', p.toString() ? '#' + p.toString() : location.pathname + location.search);
+// além dos filtros, a query guarda a ordenação (o=coluna, d=desc), a página (p) e o tamanho da página (n)
+const gravarFiltros = (f) => gravarParams(Object.fromEntries(Object.entries(CHAVES_URL).map(([k, c]) => [c, f[k]])));
+const COLUNAS_CHAVES = COLUNAS.map(([k]) => k);
+const lerTabela = () => {
+  const p = lerParams(); const o = p.get('o'); const pg = Number(p.get('p')); const n = Number(p.get('n'));
+  return { ord: { key: COLUNAS_CHAVES.includes(o) ? o : 'estado', dir: p.get('d') === '1' ? -1 : 1 }, pag: Number.isInteger(pg) && pg > 1 ? pg - 1 : 0, tam: [25, 50, 100].includes(n) ? n : 25 };
 };
 
 const csv = (linhas) => {
@@ -35,9 +38,10 @@ const campoNum = (v, set) => ({ value: v, onChange: (e) => set(e.target.value.re
 
 export default function BuscaSecoes({ dados, externo }) {
   const [f, setF] = useState(lerFiltros);
-  const [ord, setOrd] = useState({ key: 'estado', dir: 1 });
-  const [pag, setPag] = useState(0);
-  const [tam, setTam] = useState(25);
+  const [ini0] = useState(lerTabela);
+  const [ord, setOrd] = useState(ini0.ord);
+  const [pag, setPag] = useState(ini0.pag);
+  const [tam, setTam] = useState(ini0.tam);
   const [ancora, setAncora] = useState(null);
   const [destaque, setDestaque] = useState(false);
   const [abertas, setAbertas] = useState({});
@@ -48,6 +52,7 @@ export default function BuscaSecoes({ dados, externo }) {
   const ativosChaves = CHAVES_FILTRO.filter((k) => f[k] !== '');
   const filtrosAtivos = ativosChaves.length;
   useEffect(() => { gravarFiltros(f); }, [f]);
+  useEffect(() => { gravarParams({ o: ord.key === 'estado' ? '' : ord.key, d: ord.dir === -1 ? 1 : '', p: pag > 0 ? pag + 1 : '', n: tam === 25 ? '' : tam }); }, [ord, pag, tam]);
   // nova busca, filtro, ordenação ou página: recolhe as linhas expandidas
   useEffect(() => { setAbertas({}); }, [f, ord, pag, tam]);
   // "Ver na lista completa", vindo da consulta: substitui busca e filtros pelos da consulta (os anteriores são
