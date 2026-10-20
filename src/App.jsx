@@ -1,4 +1,4 @@
-import { ANALISE_URL } from './config.js';
+import { ANALISE_URL, FONTE_URL, VERSOES } from './config.js';
 import { useDados } from './busca.js';
 import ThemeToggle from './ThemeToggle.jsx';
 import { useState } from 'react';
@@ -12,7 +12,11 @@ export default function App() {
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
-        <p className="banner" role="note"><strong>Informação mais recente, mas confirme no e-Título.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções; a fonte não informa a data de publicação). As versões anteriores não são usadas aqui — a comparação está na análise completa. A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
+        <aside className="banner" role="note" aria-label="Avisos importantes">
+          <p><strong>Este não é um site oficial. Confirmar o seu local de votação no e-Título é de extrema importância.</strong></p>
+          <p>Foram divulgadas três versões datadas da lista de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a lista mais recente, disponível no <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Capilaridade do SIG/TSE</a> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções, com data de publicação não informada na fonte. As versões anteriores não são usadas aqui (a comparação está na análise completa).</p>
+          <p>A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
+        </aside>
         <header className="hero estreito">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
@@ -40,7 +44,7 @@ export default function App() {
         <p>Quer entender o que mudou nas listas e o que isso pode (ou não) significar?</p>
         <a className="btn primary big" href={ANALISE_URL}>Análise completa →</a>
         <p className="note">Os dados mostram o perfil das listas, não comprovam mudanças no resultado da eleição.</p>
-        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas e resultados divulgados pela Justiça Eleitoral (TSE e TREs); as comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
+        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas divulgadas pela Justiça Eleitoral; a lista mais recente usada nesta busca vem do <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Capilaridade do SIG/TSE</a>. As comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
       </footer>
     </div>
   );
