@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Autocomplete, Button, Chip, Drawer, IconButton, InputAdornment, Pagination, Popover, TextField, useMediaQuery } from '@mui/material';
+import { Autocomplete, Button, Chip, Drawer, InputAdornment, Pagination, Popover, TextField, useMediaQuery } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
@@ -30,7 +30,6 @@ const csv = (linhas) => {
 };
 
 const IconeFiltro = () => <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9M13 4v6M7 14v6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" fill="none" /></svg>;
-const IconeLixo = () => <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm-3 6h12l-1 11H7L6 9Z" fill="currentColor" /></svg>;
 const Lupa = () => <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 10 3Zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Z" fill="currentColor" /></svg>;
 const campoNum = (v, set) => ({ value: v, onChange: (e) => set(e.target.value.replace(/\D/g, '')), slotProps: { htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } } });
 
@@ -44,7 +43,6 @@ export default function BuscaSecoes({ dados, externo }) {
   const secaoRef = useRef(null);
   const tabelaRef = useRef(null);
   const celular = useMediaQuery('(max-width:760px)');
-  const [campos, setCampos] = useState(() => CHAVES_FILTRO.filter((k) => lerFiltros()[k]));
   const set = (k, v) => { setPag(0); setF((x) => ({ ...x, [k]: v })); };
   const ativosChaves = CHAVES_FILTRO.filter((k) => f[k] !== '');
   const filtrosAtivos = ativosChaves.length;
@@ -53,7 +51,7 @@ export default function BuscaSecoes({ dados, externo }) {
   // limpos para a tabela mostrar exatamente o resultado), rola até a tabela e destaca a(s) linha(s) por alguns segundos
   useEffect(() => {
     if (!externo?.n) return undefined;
-    setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros }); setCampos(CHAVES_FILTRO.filter((k) => externo.filtros[k]));
+    setAncora(null); setPag(0); setF({ ...VAZIO, ...externo.filtros });
     setDestaque(false);
     (celular ? tabelaRef : secaoRef).current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const entra = setTimeout(() => setDestaque(true), 450);   // espera a rolagem para o fade-in ser visto
@@ -84,10 +82,8 @@ export default function BuscaSecoes({ dados, externo }) {
     document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
   };
 
-  const limparCampo = (k) => { setPag(0); setF((x) => ({ ...x, [k]: '' })); setCampos((c) => c.filter((x) => x !== k)); };
-  const trocarCampo = (velho, novo) => { setPag(0); setF((x) => ({ ...x, [novo]: x[velho], [velho]: '' })); setCampos((c) => c.map((x) => (x === velho ? novo : x))); };
-  const adicionarCampo = () => { const livre = CHAVES_FILTRO.find((k) => !campos.includes(k)); if (livre) setCampos((c) => [...c, livre]); };
-  const limparTudo = () => { setF(VAZIO); setCampos([]); setPag(0); };
+  const limparCampo = (k) => { setPag(0); setF((x) => ({ ...x, [k]: '' })); };
+  const limparTudo = () => { setF(VAZIO); setPag(0); };
   const rotuloChip = (k) => (k === 'uf' ? `Estado: ${f.uf} — ${nomeEstado(f.uf)}` : `${CAMPOS[k].rotulo}: ${CAMPOS[k].tipo === 'num' ? f[k] : `contém “${f[k]}”`}`);
 
   const editor = (k) => {
@@ -96,11 +92,11 @@ export default function BuscaSecoes({ dados, externo }) {
       <Autocomplete size="small" options={dados.ufs} value={f.uf || null} onChange={(_, v) => { setPag(0); setF((x) => ({ ...x, uf: v || '', mun: '' })); }}
         getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
         filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
-        noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} aria-label={rotulo} placeholder="Nome ou sigla" />} />
+        noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} placeholder="Nome ou sigla" inputProps={{ ...params.inputProps, 'aria-label': rotulo }} />} />
     );
     if (tipo === 'municipio') return (
       <Autocomplete size="small" freeSolo options={sugestoes} inputValue={f.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
-        renderInput={(params) => <TextField {...params} aria-label={rotulo} placeholder="Contém…" />} />
+        renderInput={(params) => <TextField {...params} placeholder="Contém…" inputProps={{ ...params.inputProps, 'aria-label': rotulo }} />} />
     );
     if (tipo === 'num') return <TextField size="small" placeholder="Número" value={f[k]} onChange={(e) => set(k, e.target.value.replace(/\D/g, ''))} slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*', 'aria-label': rotulo } }} />;
     return <TextField size="small" placeholder="Contém…" value={f[k]} onChange={(e) => set(k, e.target.value)} slotProps={{ htmlInput: { 'aria-label': rotulo } }} />;
@@ -136,17 +132,14 @@ export default function BuscaSecoes({ dados, externo }) {
           <Drawer anchor="bottom" open={Boolean(ancora)} onClose={() => setAncora(null)} slotProps={{ paper: { className: 'folha-filtros', role: 'dialog', 'aria-label': 'Filtros por campo' } }}>
             <div className="folha-alca" aria-hidden="true" />
           <div className="pop-topo"><strong>Filtros</strong>{filtrosAtivos > 0 && <button type="button" className="link-acao" onClick={limparTudo}>Limpar filtros</button>}</div>
-          {campos.length === 0 && <p className="pop-vazio">Nenhum filtro aplicado. Adicione um para refinar por estado, município, zona, seção ou local.</p>}
-          {campos.map((k) => (
-            <div className="pop-linha" key={k}>
-              <TextField select size="small" value={k} onChange={(e) => trocarCampo(k, e.target.value)} slotProps={{ select: { native: true }, htmlInput: { 'aria-label': 'Campo do filtro' } }}>
-                {CHAVES_FILTRO.filter((c) => c === k || !campos.includes(c)).map((c) => <option key={c} value={c}>{CAMPOS[c].rotulo}</option>)}
-              </TextField>
-              <div className="pop-valor">{editor(k)}</div>
-              <IconButton aria-label={`Remover filtro ${CAMPOS[k].rotulo}`} onClick={() => limparCampo(k)} size="small"><IconeLixo /></IconButton>
+          <div className="pop-campos">
+              {CHAVES_FILTRO.map((k) => (
+                <div className="pop-campo" key={k}>
+                  <span className="pop-rotulo">{CAMPOS[k].rotulo}</span>
+                  {editor(k)}
+                </div>
+              ))}
             </div>
-          ))}
-          {campos.length < CHAVES_FILTRO.length && <button type="button" className="pop-add" onClick={adicionarCampo}><span aria-hidden="true">+</span> Adicionar filtro</button>}
           <TextField select size="small" className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
             {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
           </TextField>
@@ -156,17 +149,14 @@ export default function BuscaSecoes({ dados, externo }) {
           <Popover open={Boolean(ancora)} anchorEl={ancora} onClose={() => setAncora(null)} anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }} transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             slotProps={{ paper: { className: 'filtros-popover', role: 'dialog', 'aria-label': 'Filtros por campo' } }}>
           <div className="pop-topo"><strong>Filtros</strong>{filtrosAtivos > 0 && <button type="button" className="link-acao" onClick={limparTudo}>Limpar filtros</button>}</div>
-          {campos.length === 0 && <p className="pop-vazio">Nenhum filtro aplicado. Adicione um para refinar por estado, município, zona, seção ou local.</p>}
-          {campos.map((k) => (
-            <div className="pop-linha" key={k}>
-              <TextField select size="small" value={k} onChange={(e) => trocarCampo(k, e.target.value)} slotProps={{ select: { native: true }, htmlInput: { 'aria-label': 'Campo do filtro' } }}>
-                {CHAVES_FILTRO.filter((c) => c === k || !campos.includes(c)).map((c) => <option key={c} value={c}>{CAMPOS[c].rotulo}</option>)}
-              </TextField>
-              <div className="pop-valor">{editor(k)}</div>
-              <IconButton aria-label={`Remover filtro ${CAMPOS[k].rotulo}`} onClick={() => limparCampo(k)} size="small"><IconeLixo /></IconButton>
+          <div className="pop-campos">
+              {CHAVES_FILTRO.map((k) => (
+                <div className="pop-campo" key={k}>
+                  <span className="pop-rotulo">{CAMPOS[k].rotulo}</span>
+                  {editor(k)}
+                </div>
+              ))}
             </div>
-          ))}
-          {campos.length < CHAVES_FILTRO.length && <button type="button" className="pop-add" onClick={adicionarCampo}><span aria-hidden="true">+</span> Adicionar filtro</button>}
           <TextField select size="small" className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
             {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
           </TextField>

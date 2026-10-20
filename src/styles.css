@@ -264,3 +264,8 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 /* aviso legal: texto pequeno, largura total e sem segunda linha (o rodapé já tem a sua) */
 .foot { gap: 10px; }
 .foot .legal { margin: 0; padding: 0; border-top: 0; font-family: var(--sans); font-size: .66rem; line-height: 1.45; max-width: none; width: 100%; }
+
+/* "Filtros": todos os campos disponíveis de uma vez */
+.pop-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+.pop-campo { display: grid; gap: 4px; min-width: 0; } .pop-rotulo { font-size: .76rem; font-weight: 600; color: var(--fg2); letter-spacing: .01em; }
+@media (max-width: 560px) { .pop-campos { grid-template-columns: 1fr; } }
