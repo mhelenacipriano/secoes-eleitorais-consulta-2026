@@ -37,7 +37,6 @@ export default function App() {
           <div><p>Estão no seu <strong>título de eleitor</strong> (impresso ou digital) e no aplicativo <strong>e-Título</strong>.</p><p>Se a sua seção não aparece na busca, ela não consta na lista mais recente.</p></div>
         </details>
 
-        <p className="disclaimer" role="note">Esta consulta mostra apenas se a seção aparece na lista mais recente que analisamos. Não é uma fonte oficial e a lista pode estar incompleta ou desatualizada: para confirmar o seu local de votação, use o e-Título, o Autoatendimento Eleitoral do TSE ou o site do TRE do seu estado.</p>
       </main>
 
       <footer className="foot">

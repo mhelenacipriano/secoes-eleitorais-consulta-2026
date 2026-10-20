@@ -3,6 +3,7 @@ import { Autocomplete, Button, Chip, IconButton, InputAdornment, Pagination, Pop
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
+import LinkFonte from './LinkFonte.jsx';
 
 const CHAVES_URL = { q: 'tq', uf: 'tuf', mun: 'tm', zona: 'tz', secao: 'ts', ini: 'ti', fin: 'tf' };
 const COLUNAS = [['estado', 'Estado'], ['municipio', 'Município'], ['zona', 'Zona'], ['secao', 'Seção'], ['ondeVotava', 'Onde votava'], ['ondeVaiVotar', 'Onde vai votar'], ['eleitores', 'Eleitores']];
@@ -10,7 +11,6 @@ const NUMERICAS = ['zona', 'secao', 'eleitores'];
 // Campos filtráveis: o rótulo é o mesmo do cabeçalho da coluna.
 const CAMPOS = { uf: { rotulo: 'Estado', tipo: 'estado' }, mun: { rotulo: 'Município', tipo: 'municipio' }, zona: { rotulo: 'Zona', tipo: 'num' }, secao: { rotulo: 'Seção', tipo: 'num' }, ini: { rotulo: 'Onde votava', tipo: 'texto' }, fin: { rotulo: 'Onde vai votar', tipo: 'texto' } };
 const CHAVES_FILTRO = Object.keys(CAMPOS);
-const OFICIAL = 'Confirme o seu local de votação no aplicativo e-Título ou no Autoatendimento Eleitoral do TSE (ou no site do TRE do seu estado) antes de ir votar.';
 
 export const lerFiltros = () => {
   const p = new URLSearchParams(location.hash.replace(/^#\??/, ''));
@@ -150,17 +150,18 @@ export default function BuscaSecoes({ dados, externo }) {
         </Popover>
 
         <div className="resumo-tabela" aria-live="polite">
-          <span><strong>{ordenadas.length.toLocaleString('pt-BR')}</strong> de {dados.linhas.length.toLocaleString('pt-BR')} seções{filtrando ? ' encontradas' : ' na lista mais recente'}</span>
+          <span><strong>{ordenadas.length.toLocaleString('pt-BR')}</strong> de {dados.linhas.length.toLocaleString('pt-BR')} seções{filtrando ? ' encontradas' : ' na lista mais recente divulgada pelo TSE'} <LinkFonte /></span>
           <div className="resumo-acoes">
             <ShareButton className="link-acao" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Copiar link</ShareButton>
           </div>
         </div>
 
         {ordenadas.length === 0 ? (
-          <div className="vazio" role="status">
-            <p><strong>Nenhuma seção encontrada na lista mais recente.</strong></p>
-            <p>Se você procurava a sua seção, ela não consta nessa lista. Confira estado, município, zona e seção no seu título de eleitor. Algumas seções constaram em versões anteriores das listas e deixaram de constar nas atualizações. Não conseguimos confirmar se, nesses casos, o local de votação foi mantido, a mudança foi desfeita ou o registro foi corrigido. {OFICIAL}</p>
-            <Button variant="contained" onClick={limparTudo}>Limpar busca</Button>
+          <div className="vazio-res vazio-tabela" role="status">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 10 3Zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm-2.1 2.9L10 10l-2.1 2.1 1.4 1.4L11.4 11.4l2.1 2.1 1.4-1.4L12.8 10l2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4Z" fill="currentColor" /></svg>
+            <p className="vazio-tit">Nenhuma seção encontrada</p>
+            <p className="vazio-txt">Nenhuma seção da lista mais recente divulgada pelo TSE corresponde à busca e aos filtros aplicados. Tente outra palavra-chave ou remova algum filtro.</p>
+            <Button variant="outlined" color="inherit" onClick={limparTudo}>Limpar busca e filtros</Button>
           </div>
         ) : (
           <div className="tabela-wrap">
@@ -208,7 +209,6 @@ export default function BuscaSecoes({ dados, externo }) {
           </div>
         )}
       </div>
-      <p className="note">Constar na lista não prova, por si só, que o local de votação mudou. {OFICIAL}</p>
     </section>
   );
 }

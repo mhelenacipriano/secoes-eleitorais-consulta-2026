@@ -211,3 +211,10 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
   .tabela-card .paginacao .pag-ctl { grid-area: pag; justify-self: stretch; justify-content: space-between; }
   .tabela-card .paginacao .mostrando { grid-area: cont; } .tabela-card .paginacao .baixar { grid-area: baixar; min-height: 40px; }
 }
+
+/* link da fonte dentro do selo / resumo e estados vazios */
+.icone-link { display: inline-flex; align-items: center; vertical-align: middle; margin-left: 6px; color: inherit; opacity: .85; border-radius: 4px; } .icone-link:hover { opacity: 1; } .icone-link:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.resumo-tabela .icone-link { color: var(--muted); }
+.vazio-res { display: grid; justify-items: center; gap: 6px; text-align: center; padding: 26px 16px; border: 1px dashed var(--line); border-radius: 12px; background: var(--bg); color: var(--muted); }
+.vazio-res svg { color: var(--red); opacity: .9; } .vazio-tit { color: var(--fg); font-weight: 600; font-size: 1rem; } .vazio-txt { max-width: 60ch; font-size: .88rem; color: var(--fg2); } .vazio-nota { font-size: .78rem; }
+.vazio-tabela { margin: 16px; border-style: dashed; }

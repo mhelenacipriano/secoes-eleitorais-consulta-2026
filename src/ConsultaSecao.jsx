@@ -3,9 +3,9 @@ import { Autocomplete, Button, TextField } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
 import ShareButton from './ShareButton.jsx';
+import LinkFonte from './LinkFonte.jsx';
 
 const MAX_LINHAS = 5;
-const OFICIAL = 'Confirme o seu local de votação no aplicativo e-Título ou no Autoatendimento Eleitoral do TSE (ou no site do TRE do seu estado) antes de ir votar.';
 const lerUrl = () => { const p = new URLSearchParams(location.hash.replace(/^#\??/, '')); return { uf: p.get('uf') || '', mun: p.get('m') || '', zona: p.get('z') || '', secao: p.get('s') || '' }; };
 // a URL guarda a consulta (uf, m, z, s) junto com o estado da tabela (tq, tuf, ...)
 const gravarUrl = (c) => {
@@ -57,16 +57,17 @@ export default function ConsultaSecao({ dados, onVerLista }) {
       <div className="consulta-res" aria-live="polite">
         {!preenchido && <p className="res-vazio">Os resultados aparecem aqui assim que você preencher qualquer campo.</p>}
         {preenchido && achadas.length === 0 && (
-          <div className="res-box nao" role="status">
-            <div className="res-cab"><span className="selo neutro">Não consta na lista mais recente</span></div>
-            <p className="res-texto">Nenhuma seção com esses dados está na lista mais recente. Confira estado, município, zona e seção no seu título de eleitor.</p>
-            <p className="res-nota"><strong>Isso não garante que o seu local de votação seja o mesmo:</strong> a lista pode estar incompleta ou desatualizada, e algumas seções saíram das listas sem sabermos se a mudança foi mantida, desfeita ou corrigida. {OFICIAL}</p>
+          <div className="vazio-res" role="status">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 10 3Zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm-2.1 2.9L10 10l-2.1 2.1 1.4 1.4L11.4 11.4l2.1 2.1 1.4-1.4L12.8 10l2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4Z" fill="currentColor" /></svg>
+            <p className="vazio-tit">Nenhuma seção encontrada</p>
+            <p className="vazio-txt">Não encontramos uma seção com esses dados na lista mais recente divulgada pelo TSE. Confira estado, município, zona e seção no seu título de eleitor — se estiver tudo certo, ela não consta nessa lista.</p>
+            <p className="vazio-nota">Isso não garante que o local de votação seja o mesmo. Confirme no e-Título.</p>
           </div>
         )}
         {achadas.length > 0 && (
           <div className="res-box">
             <div className="res-cab">
-              <span className="selo">Consta na lista mais recente</span>
+              <span className="selo">{achadas.length === 1 ? 'Consta' : 'Constam'} na lista mais recente divulgada pelo TSE <LinkFonte /></span>
               <span className="res-conta"><strong>{achadas.length.toLocaleString('pt-BR')}</strong> {achadas.length === 1 ? 'seção' : 'seções'}</span>
               <span className="res-cab-acoes">
                 {achadas.length > MAX_LINHAS && <button type="button" className="link-acao destaque" onClick={() => onVerLista({ uf: c.uf, mun: c.mun, zona: c.zona, secao: c.secao })}>Ver as {achadas.length.toLocaleString('pt-BR')} na lista completa ↓</button>}
@@ -75,7 +76,6 @@ export default function ConsultaSecao({ dados, onVerLista }) {
             </div>
             <ul className="res-lista">{achadas.slice(0, MAX_LINHAS).map((l) => <Linha key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`} l={l} />)}</ul>
             {achadas.length > MAX_LINHAS && <p className="res-mais">Mostrando {MAX_LINHAS} de {achadas.length.toLocaleString('pt-BR')}. <button type="button" className="link-acao destaque" onClick={() => onVerLista({ uf: c.uf, mun: c.mun, zona: c.zona, secao: c.secao })}>Ver todas na lista completa</button></p>}
-            <p className="res-nota">Constar na lista não prova, por si só, que o local de votação mudou. {OFICIAL}</p>
           </div>
         )}
       </div>
