@@ -1,2 +1,2 @@
-Fredoka (Google Fonts) - subconjunto latino, fonte variável (pesos 500-600).
+Fredoka e Caveat (Google Fonts) - subconjuntos latinos.
 Licença: SIL Open Font License 1.1 (https://openfontlicense.org), que permite uso e redistribuição, inclusive em sites.
