@@ -22,9 +22,9 @@ export default function App() {
       <main>
         <aside className={`banner${avisoAberto ? ' aberto' : ''}`} role="note" aria-label="Avisos importantes">
           <p className="banner-tit"><strong>Este não é um site oficial. Confirmar o seu local de votação no e-Título é de extrema importância.</strong></p>
-          <p className="banner-resumo">Esta busca usa apenas a versão mais recente divulgada pelo TSE ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções).</p>
+          <p className="banner-resumo">Esta busca usa apenas a lista mais recente divulgada pelo TSE (de {VERSOES[VERSOES.length - 1].quando} · {dados ? dados.linhas.length.toLocaleString('pt-BR') : '448'} seções).</p>
           <div className="banner-det" id="aviso-detalhes"><div className="banner-det-in">
-            <p>Foram divulgadas três listas datadas de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a versão mais recente, disponível no site original do <span className="cola">TSE<LinkFonte alto /></span> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções, com data de publicação não informada na fonte. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
+            <p>Foram divulgadas quatro listas datadas de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a mais recente, a de {VERSOES[VERSOES.length - 1].quando}, disponível no site original do <span className="cola">TSE<LinkFonte alto /></span> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '448'} seções. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
             <p>A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
           </div></div>
           <button type="button" className="banner-toggle" aria-expanded={avisoAberto} aria-controls="aviso-detalhes" onClick={() => setAvisoAberto((x) => !x)}>{avisoAberto ? 'Ocultar detalhes' : 'Ver detalhes e fonte'}</button>
@@ -56,7 +56,7 @@ export default function App() {
         {MOSTRAR_ANALISE && (
           <div className="cta-analise">
             <p className="foot-cta">Quer entender o que mudou nas listas do TSE?</p>
-            <p className="cta-texto">O TSE divulgou três listas com as seções eleitorais cujo local de votação mudou para o 2º turno. Na análise completa, fazemos um panorama geral desses dados: quantas seções saíram e entraram em cada lista e como essas mudanças estão relacionadas aos resultados do primeiro turno de votação.</p>
+            <p className="cta-texto">O TSE divulgou quatro listas com as seções eleitorais cujo local de votação mudou para o 2º turno. Na análise completa, fazemos um panorama geral desses dados: quantas seções saíram e entraram em cada lista e como essas mudanças estão relacionadas aos resultados do primeiro turno de votação.</p>
             <a className="btn primary big" href={ANALISE_URL}>Análise completa <span className="seta-cta" aria-hidden="true">→</span></a>
             <p className="note">É um retrato dos dados, não uma prova de que o resultado da eleição mudou.</p>
           </div>

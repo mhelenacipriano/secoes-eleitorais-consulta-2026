@@ -9,6 +9,7 @@ export const VERSOES = [
   { quando: '18/10 às 11h', secoes: 2033 },
   { quando: '18/10 às 17h', secoes: 1396 },
   { quando: '19/10 às 11h', secoes: 554 },
+  { quando: '20/10 às 13h59', secoes: 448 },   // a mais recente: é a lista usada na consulta
 ];
 
 // Chamada para a análise completa no rodapé (e a menção a ela no aviso do topo). Escondida por enquanto,
