@@ -346,3 +346,5 @@ html { scroll-behavior: smooth; }
   .linha-toggle:hover { background: color-mix(in srgb, var(--red) 12%, transparent); }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .banner, .hero, .consulta, .lista-completa, .cta-analise, .foot .legal, .res-box, .vazio-res, .tabela tbody tr, .res-linha { animation: none !important; } }
+
+.vazio-res.ok svg { color: var(--fg2); } .vazio-res .vazio-nota strong { color: var(--fg); } .vazio-res .vazio-tit { max-width: 40ch; line-height: 1.35; }

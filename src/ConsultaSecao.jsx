@@ -31,6 +31,7 @@ export default function ConsultaSecao({ dados, onVerLista }) {
   const set = (k, v) => setC((x) => ({ ...x, [k]: v }));
   useEffect(() => { gravarUrl(c); }, [c]);
   const preenchido = Boolean(c.uf || c.mun.trim() || c.zona || c.secao);
+  const completo = Boolean(c.uf && c.mun.trim() && c.zona && c.secao);
   const achadas = useMemo(() => (preenchido ? filtrar(dados.linhas, { ...VAZIO, ...c }) : []), [dados, c, preenchido]);
   const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.municipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
   const sugestoes = c.uf ? dados.municipios[c.uf] || [] : todosMunicipios;
@@ -56,14 +57,21 @@ export default function ConsultaSecao({ dados, onVerLista }) {
 
       <div className="consulta-res" aria-live="polite">
         {!preenchido && <p className="res-vazio">Os resultados aparecem aqui assim que você preencher qualquer campo.</p>}
-        {preenchido && achadas.length === 0 && (
+        {preenchido && achadas.length === 0 && (completo ? (
+          <div className="vazio-res ok" role="status">
+            <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm4.3 4.8-5.1 5.1-2.5-2.5-1.4 1.4 3.9 3.9 6.5-6.5-1.4-1.4Z" fill="currentColor" /></svg>
+            <p className="vazio-tit">Segundo a última atualização do TSE, a sua seção não consta como alterada</p>
+            <p className="vazio-txt">Não há mudança de local de votação registrada para {c.mun.trim()} · {c.uf}, zona {Number(c.zona)}, seção {Number(c.secao)}, na versão mais recente da lista divulgada pelo TSE.</p>
+            <p className="vazio-nota"><strong>Mesmo assim, confirme no e-Título.</strong> A lista pode estar desatualizada ou incompleta, e isso não garante que o local de votação seja o mesmo. Use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE antes de ir votar.</p>
+          </div>
+        ) : (
           <div className="vazio-res" role="status">
             <svg viewBox="0 0 24 24" width="30" height="30" aria-hidden="true"><path d="M10 3a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 10 3Zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm-2.1 2.9L10 10l-2.1 2.1 1.4 1.4L11.4 11.4l2.1 2.1 1.4-1.4L12.8 10l2.1-2.1-1.4-1.4-2.1 2.1-2.1-2.1-1.4 1.4Z" fill="currentColor" /></svg>
-            <p className="vazio-tit">Nenhuma seção encontrada</p>
-            <p className="vazio-txt">Não encontramos uma seção com esses dados na lista mais recente divulgada pelo TSE. Confira estado, município, zona e seção no seu título de eleitor — se estiver tudo certo, ela não consta nessa lista.</p>
-            <p className="vazio-nota">Isso não garante que o local de votação seja o mesmo. Confirme no e-Título.</p>
+            <p className="vazio-tit">Nenhuma seção alterada com esses dados</p>
+            <p className="vazio-txt">Na versão mais recente da lista do TSE, nenhuma seção com mudança de local de votação corresponde ao que você preencheu. Preencha estado, município, zona e seção para uma resposta mais precisa.</p>
+            <p className="vazio-nota"><strong>Confirme no e-Título.</strong> Esta consulta não é oficial e a lista pode estar desatualizada.</p>
           </div>
-        )}
+        ))}
         {achadas.length > 0 && (
           <div className="res-box">
             <div className="res-cab">
