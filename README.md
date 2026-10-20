@@ -1,6 +1,6 @@
 # Sua seção eleitoral mudou? · Consulta 2026
 
-Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (441 seções; a fonte não informa a data), com o onde votava e onde vai votar. Uma única busca por palavra-chave (cidade, estado por nome ou sigla, local, zona, seção) e filtros por campo, todos opcionais, sobre a lista completa, com ordenação, paginação e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
+Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (441 seções; a fonte não informa a data), com o onde votava e onde vai votar. A página tem duas seções: **Encontre a sua seção** (consulta rápida por estado, município, zona e seção — todos opcionais, qualquer campo já mostra resultados) e **Lista completa** (tabela com busca por palavra-chave, filtros por campo em um popover com chips dos filtros aplicados, ordenação, paginação e "Baixar tabela" com os filtros aplicados). As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
 
 Complementa a [análise completa](https://github.com/mhelenacipriano/secoes-eleitorais-analise): o rodapé tem o botão **Análise completa**.
 
@@ -26,7 +26,7 @@ O botão do rodapé usa `VITE_ANALISE_URL` (por exemplo, `VITE_ANALISE_URL=https
 
 ## Links compartilháveis
 
-A busca fica na URL (`#q=catuipe&uf=RS&z=23&s=370`), então qualquer resultado é compartilhável.
+A consulta fica na URL (`#uf=RS&m=catuipe&z=23&s=370`) e a tabela com o prefixo `t` (`#tq=escola&tuf=MG`), então qualquer resultado é compartilhável.
 
 ## Aviso
 

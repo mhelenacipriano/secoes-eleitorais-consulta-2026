@@ -1,10 +1,13 @@
 import { ANALISE_URL } from './config.js';
 import { useDados } from './busca.js';
 import ThemeToggle from './ThemeToggle.jsx';
+import { useState } from 'react';
 import BuscaSecoes from './BuscaSecoes.jsx';
+import ConsultaSecao from './ConsultaSecao.jsx';
 
 export default function App() {
   const { dados, erro } = useDados();
+  const [externo, setExterno] = useState(null);
   return (
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
@@ -13,12 +16,17 @@ export default function App() {
         <header className="hero estreito">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
-          <p className="sub">Busque por cidade, estado, local de votação, zona ou seção para ver se ela consta na lista mais recente — e onde votava e onde vai votar. Você não precisa preencher tudo: use só o que souber.</p>
-          <ol className="passos" aria-label="Como funciona"><li><b>1</b> Busque</li><li><b>2</b> Confira a sua seção</li><li><b>3</b> Confirme no canal oficial</li></ol>
+          <p className="sub">Encontre a sua seção para ver se ela consta na lista mais recente — e onde votava e onde vai votar — ou explore a lista completa. Você não precisa preencher tudo: use só o que souber.</p>
+          <ol className="passos" aria-label="Como funciona"><li><b>1</b> Encontre a sua seção</li><li><b>2</b> Ou explore a lista</li><li><b>3</b> Confirme no canal oficial</li></ol>
         </header>
 
         {erro && <p className="erro" role="alert">Não foi possível carregar os dados ({erro.message}). Tente recarregar a página.</p>}
-        {dados ? <BuscaSecoes dados={dados} /> : !erro && <div className="skeleton" role="status" aria-label="Carregando"><i /><i /><i /></div>}
+        {dados ? (
+          <>
+            <ConsultaSecao dados={dados} onVerLista={(filtros) => setExterno((x) => ({ n: (x?.n || 0) + 1, filtros }))} />
+            <BuscaSecoes dados={dados} externo={externo} />
+          </>
+        ) : !erro && <div className="skeleton" role="status" aria-label="Carregando"><i /><i /><i /></div>}
 
         <details className="ajuda estreito">
           <summary>Onde encontro a zona e a seção?</summary>

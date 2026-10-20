@@ -28,3 +28,17 @@ export function useDados() {
   }, []);
   return estado;
 }
+
+export const VAZIO = { q: '', uf: '', mun: '', zona: '', secao: '', ini: '', fin: '' };
+
+/** Palavras-chave: todas precisam aparecer. Termos curtos ou numéricos valem como palavra inteira (ex.: "PA" ou "355"). */
+export function filtrar(linhas, f) {
+  const toks = norm(f.q).split(' ').filter(Boolean);
+  const mun = norm(f.mun), ini = norm(f.ini), fin = norm(f.fin);
+  const zona = f.zona === '' ? null : Number(f.zona), secao = f.secao === '' ? null : Number(f.secao);
+  return linhas.filter((l) =>
+    (!f.uf || l.uf === f.uf) && (!mun || l.mun.includes(mun)) && (zona == null || l.zona === zona) && (secao == null || l.secao === secao)
+    && (!ini || l.ini.includes(ini)) && (!fin || l.fin.includes(fin))
+    && toks.every((t) => (t.length <= 2 || /^\d+$/.test(t) ? l.palavras.has(t) : l.hay.includes(t))));
+}
+
