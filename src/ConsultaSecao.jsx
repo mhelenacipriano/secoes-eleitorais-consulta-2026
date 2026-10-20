@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Autocomplete, Button, TextField } from '@mui/material';
 import { VAZIO, filtrar, norm } from './busca.js';
 import { nomeEstado } from './estados.js';
@@ -28,6 +28,7 @@ function Linha({ l }) {
 /** Seção 1: "Encontre a sua seção". Todos os campos são opcionais; qualquer um já mostra resultados. */
 export default function ConsultaSecao({ dados, onVerLista }) {
   const [c, setC] = useState(lerUrl);
+  const registrada = useRef('');
   const set = (k, v) => setC((x) => ({ ...x, [k]: v }));
   useEffect(() => { gravarUrl(c); }, [c]);
   const preenchido = Boolean(c.uf || c.mun.trim() || c.zona || c.secao);
@@ -35,7 +36,22 @@ export default function ConsultaSecao({ dados, onVerLista }) {
   const achadas = useMemo(() => (preenchido ? filtrar(dados.linhas, { ...VAZIO, ...c }) : []), [dados, c, preenchido]);
   const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.municipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
   const sugestoes = c.uf ? dados.municipios[c.uf] || [] : todosMunicipios;
-  const campoNum = (k, rotulo, ph) => <TextField size="small" label={rotulo} placeholder={ph} value={c[k]} onChange={(e) => set(k, e.target.value.replace(/\D/g, ''))} slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />;
+  // registro anônimo da consulta: só depois de 1,5 s sem digitar, e o município só vai se for um nome da lista (nunca texto livre)
+  useEffect(() => {
+    const local = ['localhost', '127.0.0.1', ''].includes(location.hostname);
+    if (!preenchido || !import.meta.env.PROD || local) return undefined;
+    const t = setTimeout(() => {
+      const nm = norm(c.mun.trim());
+      const mun = nm ? (sugestoes.find((m) => norm(m) === nm) || '') : '';
+      const corpo = { uf: c.uf, mun, zona: c.zona, secao: c.secao, n: achadas.length };
+      const chave = JSON.stringify(corpo);
+      if (!(corpo.uf || corpo.mun || corpo.zona || corpo.secao) || chave === registrada.current) return;
+      registrada.current = chave;
+      fetch('/api/busca', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: chave, keepalive: true }).catch(() => {});
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [c, preenchido, achadas, sugestoes]);
+  const campoNum =(k, rotulo, ph) => <TextField size="small" label={rotulo} placeholder={ph} value={c[k]} onChange={(e) => set(k, e.target.value.replace(/\D/g, ''))} slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />;
 
   return (
     <section className="consulta" aria-labelledby="titulo-consulta">

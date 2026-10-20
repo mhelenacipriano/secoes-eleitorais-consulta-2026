@@ -5,6 +5,12 @@ const CHAVE = 'estatisticas-senha';
 const lerSenha = () => { try { return sessionStorage.getItem(CHAVE) || ''; } catch { return ''; } };
 const nInt = (n) => Number(n || 0).toLocaleString('pt-BR');
 
+const descreve = (b) => [b.uf, b.mun, b.zona && `zona ${Number(b.zona)}`, b.secao && `seção ${Number(b.secao)}`].filter(Boolean).join(' · ');
+function TabelaBuscas({ itens }) {
+  if (!itens.length) return <p className="stats-sub">—</p>;
+  return <ol className="stats-lista">{itens.map((b, i) => <li key={i}>{descreve(b)} <b>{nInt(b.vezes)}×</b></li>)}</ol>;
+}
+
 /** Página escondida (#estatisticas): acessos totais, de hoje e de quem está no site agora. Pede a senha (STATS_TOKEN). */
 export default function Estatisticas() {
   const [senha, setSenha] = useState(lerSenha);
@@ -52,6 +58,22 @@ export default function Estatisticas() {
                 <li key={d.dia}><span>{d.dia.split('-').reverse().join('/')}</span><i style={{ width: `${(d.visitas / maior) * 100}%` }} /><b>{nInt(d.visitas)}</b></li>
               ))}
             </ul>
+          )}
+          {dados?.buscas && (
+            <div className="stats-buscas">
+              <h2>Buscas</h2>
+              <p className="stats-sub">Consultas no formulário “Encontre a sua seção” (anônimas). Guardadas: {nInt(dados.buscas.guardadas)}, até o limite de 5.000.</p>
+              <div className="stats-cols">
+                <div><h3>Mais buscadas</h3><TabelaBuscas itens={dados.buscas.maisBuscadas} /></div>
+                <div><h3>Sem resultado</h3><TabelaBuscas itens={dados.buscas.semResultado} /></div>
+              </div>
+              <h3>Últimas {dados.buscas.recentes.length}</h3>
+              {dados.buscas.recentes.length === 0 ? <p className="stats-sub">Nenhuma busca ainda.</p> : (
+                <ul className="stats-lista">
+                  {dados.buscas.recentes.map((b, i) => <li key={`${b.t}-${i}`}><time>{new Date(b.t).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}</time> {descreve(b)} <b>{b.n === 0 ? 'sem resultado' : `${nInt(b.n)} resultado${b.n === 1 ? '' : 's'}`}</b></li>)}
+                </ul>
+              )}
+            </div>
           )}
           <p className="stats-nota">Atualiza sozinho a cada 5 segundos. “Online” = abas abertas com sinal nos últimos ~75 s. Um acesso = uma página carregada (recarregar conta de novo).{dados && ` Última leitura: ${new Date(dados.atualizadoEm).toLocaleTimeString('pt-BR')}.`}</p>
           <Button variant="outlined" color="inherit" onClick={sair}>Sair</Button>
