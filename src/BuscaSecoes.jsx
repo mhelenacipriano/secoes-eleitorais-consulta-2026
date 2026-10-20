@@ -40,6 +40,7 @@ export default function BuscaSecoes({ dados, externo }) {
   const [tam, setTam] = useState(25);
   const [ancora, setAncora] = useState(null);
   const [destaque, setDestaque] = useState(false);
+  const [abertas, setAbertas] = useState({});
   const secaoRef = useRef(null);
   const tabelaRef = useRef(null);
   const celular = useMediaQuery('(max-width:760px)');
@@ -47,6 +48,8 @@ export default function BuscaSecoes({ dados, externo }) {
   const ativosChaves = CHAVES_FILTRO.filter((k) => f[k] !== '');
   const filtrosAtivos = ativosChaves.length;
   useEffect(() => { gravarFiltros(f); }, [f]);
+  // nova busca, filtro, ordenação ou página: recolhe as linhas expandidas
+  useEffect(() => { setAbertas({}); }, [f, ord, pag, tam]);
   // "Ver na lista completa", vindo da consulta: substitui busca e filtros pelos da consulta (os anteriores são
   // limpos para a tabela mostrar exatamente o resultado), rola até a tabela e destaca a(s) linha(s) por alguns segundos
   useEffect(() => {
@@ -192,18 +195,27 @@ export default function BuscaSecoes({ dados, externo }) {
                 </tr>
               </thead>
               <tbody>
-                {visiveis.map((l) => (
-                  <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`} className={destaque ? 'linha-destaque' : undefined}>
-                    <td data-label="Estado" className="c-estado"><span className="pill">{l.uf}</span><span className="estado-nome"> {l.estado}</span></td>
-                    <td data-label="Município" className="c-mun">{l.municipio}</td>
-                    <td data-label="Zona" className="num c-zona">{l.zona}</td>
-                    <td data-label="Seção" className="num c-secao">{l.secao}</td>
-                    <td className="c-zs" aria-hidden="true">Zona {l.zona} · Seção {l.secao}</td>
-                    <td data-label="Onde votava" className="c-loc c-ini">{l.ondeVotava}</td>
-                    <td data-label="Onde vai votar" className="c-loc c-fin">{l.ondeVaiVotar}</td>
-                    <td data-label="Eleitores" className="num c-eleit">{l.eleitores.toLocaleString('pt-BR')}</td>
-                  </tr>
-                ))}
+                {visiveis.map((l) => {
+                  const chave = `${l.uf}-${l.municipio}-${l.zona}-${l.secao}`, aberta = Boolean(abertas[chave]);
+                  return (
+                    <tr key={chave} className={[destaque ? 'linha-destaque' : '', aberta ? 'aberta' : ''].filter(Boolean).join(' ') || undefined}
+                      onClick={() => setAbertas((a) => ({ ...a, [chave]: !a[chave] }))}>
+                      <td data-label="Estado" className="c-estado"><span className="pill">{l.uf}</span><span className="estado-nome"> {l.estado}</span></td>
+                      <td data-label="Município" className="c-mun">{l.municipio}</td>
+                      <td data-label="Zona" className="num c-zona">{l.zona}</td>
+                      <td data-label="Seção" className="num c-secao">{l.secao}</td>
+                      <td className="c-zs" aria-hidden="true">Zona {l.zona} · Seção {l.secao}</td>
+                      <td data-label="Onde votava" className="c-loc c-ini">{l.ondeVotava}</td>
+                      <td data-label="Onde vai votar" className="c-loc c-fin">{l.ondeVaiVotar}</td>
+                      <td data-label="Eleitores" className="num c-eleit">{l.eleitores.toLocaleString('pt-BR')}</td>
+                      <td className="c-toggle">
+                        <button type="button" className="linha-toggle" aria-expanded={aberta} aria-label={`${aberta ? 'Ocultar' : 'Mostrar'} os locais de votação de ${l.municipio}, zona ${l.zona}, seção ${l.secao}`}>
+                          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

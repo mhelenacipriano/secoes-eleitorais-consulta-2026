@@ -269,3 +269,33 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 .pop-campos { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 14px; }
 .pop-campo { display: grid; gap: 4px; min-width: 0; } .pop-rotulo { font-size: .76rem; font-weight: 600; color: var(--fg2); letter-spacing: .01em; }
 @media (max-width: 560px) { .pop-campos { grid-template-columns: 1fr; } }
+
+/* ---------- Celular: linhas compactas e expansíveis ---------- */
+.c-toggle { display: none; }
+@media (max-width: 760px) {
+  .tabela tbody tr { grid-template-columns: auto 1fr auto; grid-template-areas: "uf mun tog" "uf zs tog" "ini ini ini" "fin fin fin" "eleit eleit eleit"; gap: 0 10px; padding: 6px 4px 6px 12px; align-items: center; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .tabela tbody td.c-estado { grid-area: uf; grid-row: 1 / span 2; align-self: center; }
+  .tabela tbody td.c-mun { grid-area: mun; align-self: end; font-size: .9rem; line-height: 1.25; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tabela tbody td.c-zs { display: block; grid-area: zs; align-self: start; font-size: .74rem; line-height: 1.25; }
+  .tabela tbody td.c-toggle { display: block; grid-area: tog; grid-row: 1 / span 2; }
+  .tabela tbody td.c-ini, .tabela tbody td.c-fin, .tabela tbody td.c-eleit { display: none; }
+  .tabela tbody tr.aberta td.c-ini, .tabela tbody tr.aberta td.c-fin, .tabela tbody tr.aberta td.c-eleit { display: block; }
+  .tabela tbody tr.aberta td.c-ini { grid-area: ini; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); }
+  .tabela tbody tr.aberta td.c-fin { grid-area: fin; margin-top: 8px; }
+  .tabela tbody tr.aberta td.c-eleit { grid-area: eleit; margin-top: 8px; text-align: left; padding-bottom: 6px; }
+  .linha-toggle { all: unset; box-sizing: border-box; width: 44px; height: 44px; display: grid; place-items: center; color: var(--red); cursor: pointer; border-radius: 50%; }
+  .linha-toggle:focus-visible { outline: 2px solid var(--red); outline-offset: -4px; }
+  .linha-toggle svg { transition: transform .2s ease; } .tabela tr.aberta .linha-toggle svg { transform: rotate(180deg); }
+}
+@media (prefers-reduced-motion: reduce) { .linha-toggle svg { transition: none; } }
+@media (max-width: 760px) {
+  .tabela tbody tr { padding: 3px 4px 3px 12px; gap: 0 10px; }
+  .tabela tbody td.c-mun { font-size: .88rem; line-height: 1.2; }
+  .tabela tbody td.c-zs { font-size: .72rem; line-height: 1.2; }
+  .linha-toggle { width: 36px; height: 36px; }
+  .tabela tbody td.c-estado .pill { margin-right: 0; }
+}
+@media (max-width: 760px) {
+  .tabela tbody td { padding: 0; border: 0; }
+  .tabela tbody td.c-mun { padding-top: 2px; } .tabela tbody td.c-zs { padding-bottom: 2px; }
+}
