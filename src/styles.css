@@ -357,3 +357,32 @@ html { scroll-behavior: smooth; }
 .stats-card strong { font-family: var(--serif); font-size: 2.4rem; font-weight: 400; line-height: 1.1; font-variant-numeric: tabular-nums; } .stats-card.destaque { border-color: var(--red); } .stats-card.destaque strong { color: var(--red); }
 .stats-dias { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; } .stats-dias li { display: grid; grid-template-columns: 5.5rem 1fr 3.5rem; gap: 10px; align-items: center; font-size: .88rem; } .stats-dias i { height: 10px; border-radius: 5px; background: var(--red); min-width: 2px; transition: width .4s ease; } .stats-dias b { text-align: right; font-variant-numeric: tabular-nums; }
 .stats > button { justify-self: start; }
+
+/* ================= Botão de curtida (estrelinha) ================= */
+@font-face { font-family: "Fredoka"; src: url("/fonts/fredoka-latin.woff2") format("woff2"); font-weight: 500 600; font-style: normal; font-display: swap; }
+.app { padding-bottom: 84px; }
+/* sem fundo nem borda: só a estrela e um "bilhete" inclinado ao lado, com um halo na cor do fundo para ler por cima do conteúdo */
+.curtida { position: fixed; right: 18px; bottom: 14px; z-index: 40; display: inline-flex; flex-direction: row-reverse; align-items: center; gap: 4px; padding: 6px; margin: 0; border: 0; background: none; color: var(--fg);
+  font-family: "Fredoka", ui-rounded, "Nunito", system-ui, sans-serif; font-weight: 500; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.curtida:active .estrela { transform: scale(.92); } .curtida:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 14px; }
+.curtida .estrela { position: relative; width: 34px; height: 34px; display: grid; place-items: center; transition: transform .2s ease; filter: drop-shadow(0 0 3px var(--bg)) drop-shadow(0 0 5px var(--bg)); }
+.curtida svg { width: 32px; height: 32px; overflow: visible; transition: transform .35s cubic-bezier(.3, 1.6, .5, 1); }
+.curtida .contorno { fill: transparent; stroke: var(--red); stroke-width: 2.2; stroke-linejoin: round; transition: fill .35s ease; }
+@media (hover: hover) and (pointer: fine) { .curtida:hover:not(.curtiu) svg { transform: rotate(-14deg); } .curtida:hover .texto { transform: rotate(-9deg) translateY(-6px); } }
+.curtida.curtiu .contorno { fill: var(--red); }
+.curtida.sobe svg { animation: curtida-pop .6s cubic-bezier(.3, 1.6, .5, 1); }
+@keyframes curtida-pop { 0% { transform: scale(1) rotate(0); } 35% { transform: scale(1.5) rotate(72deg); } 100% { transform: scale(1) rotate(0); } }
+.curtida .texto { display: grid; justify-items: end; line-height: 1; text-align: right; transform: rotate(-6deg) translateY(-5px); transform-origin: right center; transition: transform .35s cubic-bezier(.3, 1.4, .5, 1);
+  text-shadow: 0 0 3px var(--bg), 0 0 6px var(--bg), 0 0 9px var(--bg); }
+.curtida .frase { font-size: 1.08rem; font-weight: 600; letter-spacing: .01em; }
+.curtida .num { height: 1.15em; overflow: hidden; position: relative; margin: 3px 6px 0 0; font-size: .82rem; color: var(--muted); font-weight: 500; transform: rotate(4deg); }
+.curtida .num span { display: block; transition: transform .45s cubic-bezier(.3, 1.2, .4, 1), opacity .35s; } .curtida .num .novo { position: absolute; right: 0; top: 0; transform: translateY(110%); opacity: 0; }
+.curtida.sobe .num .velho { transform: translateY(-110%); opacity: 0; } .curtida.sobe .num .novo { transform: none; opacity: 1; }
+.curtida.curtiu .frase { color: var(--red); }
+.curtida .faisca { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 50%; background: var(--red); opacity: 0; pointer-events: none; }
+.curtida.sobe .faisca { animation: curtida-faisca .65s ease-out forwards; animation-delay: .05s; } @keyframes curtida-faisca { 0% { opacity: 1; transform: rotate(var(--a)) translateX(4px) scale(1); } 100% { opacity: 0; transform: rotate(var(--a)) translateX(28px) scale(.2); } }
+.curtida .balao { position: absolute; right: 6px; bottom: calc(100% + 6px); padding: 5px 12px; border-radius: 12px; background: var(--red-solid); color: #fff; font-size: .8rem; font-weight: 600; white-space: nowrap; opacity: 0; pointer-events: none; text-shadow: none; }
+.curtida.sobe .balao { animation: curtida-balao 1.6s ease forwards; } @keyframes curtida-balao { 0% { opacity: 0; transform: translateY(6px) scale(.9) rotate(-4deg); } 15%, 70% { opacity: 1; transform: rotate(-4deg); } 100% { opacity: 0; transform: translateY(-4px) rotate(-4deg); } }
+@media (prefers-reduced-motion: reduce) { .curtida, .curtida * { animation: none !important; transition: none !important; } }
+@media (max-width: 520px) { .curtida { right: 10px; bottom: 10px; } .curtida .frase { font-size: 1rem; } }
+@media print { .curtida { display: none !important; } }

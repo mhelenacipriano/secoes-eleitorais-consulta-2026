@@ -14,3 +14,6 @@ export const VERSOES = [
 // Chamada para a análise completa no rodapé (e a menção a ela no aviso do topo). Escondida por enquanto,
 // enquanto a análise é refinada: troque para true para voltar a exibir.
 export const MOSTRAR_ANALISE = true;
+
+// Texto do botão de curtida (canto da tela).
+export const TEXTO_CURTIDA = 'vamo no 13!';
