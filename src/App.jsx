@@ -1,4 +1,5 @@
-import { ANALISE_URL, MOSTRAR_ANALISE, VERSOES } from './config.js';
+import { ANALISE_URL, MOSTRAR_ANALISE } from './config.js';
+import { quando } from './datas.js';
 import LinkFonte from './LinkFonte.jsx';
 import AvisoTse from './AvisoTse.jsx';
 import { useDados } from './busca.js';
@@ -13,6 +14,8 @@ export default function App() {
   const { dados, erro } = useDados();
   const [externo, setExterno] = useState(null);
   const [avisoAberto, setAvisoAberto] = useState(false);
+  const hist = dados ? dados.historico : [];                      // uma linha por lista (rótulo, seções), a última é a usada na busca
+  const ult = hist.length ? hist[hist.length - 1] : { rotulo: '', secoes: 0 };
   const [ufSel, setUfSel] = useState('');
   const [forcarUf, setForcarUf] = useState(null);
   // clique no mapa: preenche o campo Estado da consulta e leva à lista completa já filtrada (desmarcar só limpa)
@@ -21,12 +24,12 @@ export default function App() {
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
-        <AvisoTse />
+        <AvisoTse meta={dados && dados.meta} />
         <aside className={`banner${avisoAberto ? ' aberto' : ''}`} role="note" aria-label="Avisos importantes">
           <p className="banner-tit"><strong>Este não é um site oficial. Confirmar o seu local de votação no e-Título é de extrema importância.</strong></p>
-          <p className="banner-resumo">Esta busca usa apenas a lista mais recente divulgada pelo TSE (de {VERSOES[VERSOES.length - 1].quando} · {dados ? dados.linhas.length.toLocaleString('pt-BR') : '453'} seções).</p>
+          <p className="banner-resumo">Esta busca usa apenas a lista mais recente divulgada pelo TSE {dados ? <>(de {quando(ult.rotulo)} · {dados.linhas.length.toLocaleString('pt-BR')} seções)</> : ''}.</p>
           <div className="banner-det" id="aviso-detalhes"><div className="banner-det-in">
-            <p>Foram divulgadas várias listas datadas de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a mais recente, a de {VERSOES[VERSOES.length - 1].quando}, disponível no site original do <span className="cola">TSE<LinkFonte alto /></span> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '448'} seções. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
+            <p>Foram divulgadas várias listas datadas de seções com local de votação alterado: {hist.map((v, i) => <span key={v.rotulo}>{i > 0 && (i === hist.length - 1 ? ' e ' : ', ')}{quando(v.rotulo)} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a mais recente, a de {quando(ult.rotulo)}, disponível no site original do <span className="cola">TSE<LinkFonte alto /></span> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : ''} seções. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
             <p>A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
           </div></div>
           <button type="button" className="banner-toggle" aria-expanded={avisoAberto} aria-controls="aviso-detalhes" onClick={() => setAvisoAberto((x) => !x)}>{avisoAberto ? 'Ocultar detalhes' : 'Ver detalhes e fonte'}</button>

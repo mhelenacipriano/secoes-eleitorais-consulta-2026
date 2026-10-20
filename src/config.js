@@ -4,19 +4,6 @@ export const ANALISE_URL = import.meta.env.VITE_ANALISE_URL || 'https://secoes-e
 // Painel "Seções alteradas" do SIG/TSE, de onde vem a lista mais recente usada nesta busca.
 export const FONTE_URL = 'https://sig.tse.jus.br/ords/dwapr/r/seai/sig-eleicao-eleitorado/se%C3%A7%C3%B5es-alteradas';
 
-// Versões datadas da lista de seções com local alterado (contagens conferidas no CSV da análise).
-export const VERSOES = [
-  { quando: '18/10 às 11h', secoes: 2033 },
-  { quando: '18/10 às 17h', secoes: 1396 },
-  { quando: '19/10 às 11h', secoes: 554 },
-  { quando: '20/10 às 13h59', secoes: 448 },
-  { quando: '20/10 às 15h27', secoes: 453 },   // a mais recente: é a lista usada na consulta
-];
-
-// O que o próprio site do TSE informa sobre as atualizações e quando baixamos a lista mais recente.
-export const TSE_ATUALIZACAO = { ultima: '20.10.2026 - 15:27', proxima: '20.10.2026 - 20:25', frequencia: 'às 06:25, 11:25, 15:25 e 20:25' };
-export const BAIXADA_EM = '20/10 às 17h46';
-
 // Chamada para a análise completa no rodapé (e a menção a ela no aviso do topo). Escondida por enquanto,
 // enquanto a análise é refinada: troque para true para voltar a exibir.
 export const MOSTRAR_ANALISE = true;

@@ -11,7 +11,7 @@ export function useDados() {
     // todos os municípios do Brasil (IBGE), para a consulta listar qualquer estado e cidade; se falhar, cai nos que constam na lista
     const todos = fetch('./municipios.json').then((r) => (r.ok ? r.json() : null)).catch(() => null);
     Promise.all([fetch('./secoes.json').then((r) => (r.ok ? r.json() : Promise.reject(new Error('Erro ' + r.status)))), todos])
-      .then(([{ dados }, todosMun]) => {
+      .then(([{ dados, meta, historico }, todosMun]) => {
         const linhas = dados.map(([uf, municipio, zona, secao, ondeVotava, ondeVaiVotar, eleitores]) => ({
           uf, estado: nomeEstado(uf), municipio, mun: norm(municipio), zona, secao, ondeVotava, ondeVaiVotar, eleitores,
           ini: norm(ondeVotava), fin: norm(ondeVaiVotar),
@@ -25,7 +25,7 @@ export function useDados() {
         const todosMunicipios = todosMun || municipios;
         const todasUfs = Object.keys(ESTADOS).filter((u) => u !== 'ZZ' && (todosMun ? todosMun[u] : municipios[u])).sort((a, b) => nomeEstado(a).localeCompare(nomeEstado(b), 'pt-BR'));
         if (ufs.includes('ZZ')) todasUfs.push('ZZ');
-        vivo && setEstado({ dados: { linhas, ufs, municipios, todasUfs, todosMunicipios }, erro: null });
+        vivo && setEstado({ dados: { linhas, ufs, municipios, todasUfs, todosMunicipios, meta: meta || null, historico: historico || [] }, erro: null });
       })
       .catch((erro) => vivo && setEstado({ dados: null, erro }));
     return () => { vivo = false; };

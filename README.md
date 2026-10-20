@@ -52,3 +52,8 @@ Como ligar na Vercel:
 4. Abra `https://SEU-SITE/#estatisticas` e entre com a senha.
 
 Sem essas variáveis o site funciona normalmente e o contador fica desligado. Não conta em desenvolvimento nem na própria página de estatísticas. Código: `api/` (funções), `src/contador.js` (envio) e `src/Estatisticas.jsx` (painel).
+
+## Atualização das listas do TSE
+
+`node scripts/gerar-dados.mjs <link .csv.zip | arquivo>` baixa, confere e grava `public/secoes.json` com a lista mais recente, mais `meta` (quando foi publicada e baixada) e `historico` (uma linha por lista). O aviso do topo e os textos de datas vêm desses metadados, sem nada escrito à mão. Se a lista for igual à atual, não muda nada.
+O link do CDN muda a cada publicação e só aparece no painel do SIG/TSE (que bloqueia data centers): use o workflow *Atualizar lista do TSE* (Run workflow + link) ou a rotina local do repositório da análise (`scripts/atualizar-tudo.mjs`, com `CONSULTA_DIR` apontando para este projeto).
