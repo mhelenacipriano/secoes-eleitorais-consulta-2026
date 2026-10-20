@@ -1,6 +1,6 @@
 # Sua seção eleitoral mudou? · Consulta 2026
 
-Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (438 seções; a fonte não informa a data), com o onde votava e onde vai votar. Abaixo da consulta há a lista completa, com busca e filtro em todas as colunas (nenhum obrigatório) e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
+Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (438 seções; a fonte não informa a data), com o onde votava e onde vai votar. Uma única busca por palavra-chave (cidade, estado por nome ou sigla, local, zona, seção) e filtros por campo, todos opcionais, sobre a lista completa, com ordenação, paginação e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
 
 Complementa a [análise completa](https://github.com/mhelenacipriano/secoes-eleitorais-analise): o rodapé tem o botão **Análise completa**.
 
@@ -14,10 +14,10 @@ npm run build    # gera dist/ (hospedagem estática, base relativa)
 
 ## Dados
 
-`public/secoes.json` é gerado do CSV do projeto de análise e contém só as seções da lista mais recente, com o necessário para a consulta (UF, município, zona, seção, onde votava e onde vai votar). Não há votos nem número de eleitores.
+`dados-fonte/secoes_eleitorais_alteradas_2t-regiao_2026.csv` é o CSV oficial da lista mais recente (ISO-8859-1, separado por `;`). `public/secoes.json` é gerado dele, só com os campos da consulta (UF, município, zona, seção, onde votava, onde vai votar e eleitores da seção). Não há votos nem dados pessoais.
 
 ```bash
-npm run dados -- caminho/para/secoes_v.csv
+npm run dados -- dados-fonte/secoes_eleitorais_alteradas_2t-regiao_2026.csv
 ```
 
 ## Link da análise completa
@@ -26,7 +26,7 @@ O botão do rodapé usa `VITE_ANALISE_URL` (por exemplo, `VITE_ANALISE_URL=https
 
 ## Links compartilháveis
 
-Uma consulta fica na URL: `#uf=CE&m=JARDIM&z=119&s=352`.
+A busca fica na URL (`#q=catuipe&uf=RS&z=23&s=370`), então qualquer resultado é compartilhável.
 
 ## Aviso
 
