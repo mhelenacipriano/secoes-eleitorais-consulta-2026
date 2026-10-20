@@ -83,7 +83,7 @@ export default function BuscaSecoes({ dados }) {
           <TextField id="busca-geral" type="search" fullWidth label="Buscar" placeholder="Cidade, estado, local, zona ou seção" value={f.q} onChange={(e) => set('q', e.target.value)}
             slotProps={{ inputLabel: { shrink: true }, input: { startAdornment: <InputAdornment position="start"><Lupa /></InputAdornment> } }} />
           <div className="topo-linha">
-            <p className="dica-busca">Tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Nenhum campo é obrigatório.</p>
+            <p className="dica-busca">Tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Todos os campos são opcionais: use a busca para refinar os resultados.</p>
             <button type="button" className="filtros-toggle" aria-expanded={aberto} aria-controls="painel-filtros" onClick={() => setAberto((x) => !x)}>
               Filtros{filtrosAtivos > 0 && <span className="count">{filtrosAtivos}</span>}<span aria-hidden="true" className="seta">{aberto ? '▴' : '▾'}</span>
             </button>
@@ -112,7 +112,6 @@ export default function BuscaSecoes({ dados }) {
           <div className="resumo-acoes">
             {filtrando && <button type="button" className="link-acao" onClick={limpar}>Limpar busca</button>}
             <ShareButton className="link-acao" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Copiar link</ShareButton>
-            <button type="button" className="link-acao" onClick={baixar} disabled={!ordenadas.length}>Baixar CSV</button>
           </div>
         </div>
 
@@ -154,11 +153,17 @@ export default function BuscaSecoes({ dados }) {
 
         {ordenadas.length > 0 && (
           <div className="paginacao">
-            <TextField select size="small" label="Linhas por página" value={tam} onChange={(e) => { setTam(Number(e.target.value)); setPag(0); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
-              {[25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
-            </TextField>
-            <span>{p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
-            <Pagination count={paginas} page={p + 1} onChange={(_, v) => { setPag(v - 1); document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' }); }} color="primary" shape="rounded" siblingCount={0} boundaryCount={1} aria-label="Paginação da tabela" />
+            <button type="button" className="link-acao baixar" onClick={baixar} title={`Baixa as ${ordenadas.length.toLocaleString('pt-BR')} seções do resultado atual (com a busca e os filtros aplicados) em CSV`}>
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 3v11.2l4.1-4.1 1.4 1.4L12 17l-5.5-5.5 1.4-1.4 4.1 4.1V3h2ZM5 19h14v2H5v-2Z" fill="currentColor" /></svg>
+              Baixar tabela
+            </button>
+            <div className="pag-ctl">
+              <TextField select size="small" label="Linhas por página" value={tam} onChange={(e) => { setTam(Number(e.target.value)); setPag(0); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
+                {[25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+              </TextField>
+              <span>{p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
+              <Pagination count={paginas} page={p + 1} onChange={(_, v) => { setPag(v - 1); document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' }); }} color="primary" shape="rounded" siblingCount={0} boundaryCount={1} aria-label="Paginação da tabela" />
+            </div>
           </div>
         )}
       </div>

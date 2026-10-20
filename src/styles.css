@@ -126,3 +126,12 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 .tabela-card .vazio { border: 0; border-radius: 0; }
 @media (max-width: 760px) { .tabela-card .resumo-acoes { width: auto; } .tabela-topo { padding: 12px; } .tabela-card .resumo-tabela { padding: 8px 12px; } }
 .link-acao:disabled { opacity: .45; cursor: default; }
+
+/* ações menores e rodapé da tabela */
+.link-acao { min-height: 32px; padding: 0 10px; font-size: .78rem; gap: 6px; }
+.tabela-card .resumo-tabela { font-size: .86rem; padding: 8px 16px; }
+.tabela-card .paginacao { justify-content: space-between; gap: 10px 16px; }
+.pag-ctl { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; justify-content: flex-end; }
+.link-acao.baixar { border: 1px solid var(--line); min-height: 36px; padding: 0 14px; font-size: .82rem; font-weight: 600; } .link-acao.baixar:hover { border-color: var(--fg); }
+@media (max-width: 760px) { .tabela-card .paginacao { flex-direction: column; align-items: stretch; } .pag-ctl { justify-content: space-between; } .link-acao.baixar { justify-content: center; min-height: 44px; } }
+.pag-ctl .MuiTextField-root { min-width: 132px; }
