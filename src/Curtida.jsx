@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
+import { TEXTO_CURTIDA } from './config.js';
 
 const FLAG = 'curtiu-o-site';
 const lerFlag = () => { try { return localStorage.getItem(FLAG) === '1'; } catch { return false; } };
 const gravarFlag = () => { try { localStorage.setItem(FLAG, '1'); } catch { /* sem armazenamento: só vale nesta visita */ } };
 const pt = (n) => Number(n).toLocaleString('pt-BR');
 
-/** Botão de curtida no canto da tela: coração só com contorno que se preenche ao clicar e soma ao contador. */
+/** Botão de curtida no canto da tela: estrela só com contorno que se preenche ao clicar e soma ao contador. */
 export default function Curtida() {
   const [total, setTotal] = useState(null);       // null = contador indisponível (o botão não aparece)
   const [jaCurtiu] = useState(lerFlag);            // curtiu em uma visita anterior (o total do servidor já inclui)
@@ -28,11 +29,12 @@ export default function Curtida() {
   return (
     <button type="button" className={`curtida${curtiu ? ' curtiu' : ''}${agora ? ' sobe' : ''}`} onClick={clicar} aria-pressed={curtiu}
       aria-label={curtiu ? `Você curtiu este site. Curtidas: ${agora ? depois : antes}` : `Curtir este site. Curtidas: ${antes}`}>
-      <span className="coracao" aria-hidden="true">
-        <svg viewBox="0 0 24 24"><path className="contorno" d="M12 20.5s-7.7-4.7-9.7-9.5C.9 7.6 2.8 4 6.4 4c2.3 0 4 1.3 5.6 3.4C13.6 5.3 15.3 4 17.6 4c3.6 0 5.5 3.6 4.1 7-2 4.8-9.7 9.5-9.7 9.5z" /></svg>
+      <span className="estrela" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><polygon className="contorno" points="12,2.6 14.9,8.9 21.8,9.6 16.6,14.2 18.1,21 12,17.5 5.9,21 7.4,14.2 2.2,9.6 9.1,8.9" /></svg>
         {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => <i className="faisca" style={{ '--a': `${a}deg` }} key={a} />)}
       </span>
-      <span className="num" aria-hidden="true"><span className="velho">{antes}</span><span className="novo">{depois}</span></span>
+      <span className="texto"><span className="frase">{TEXTO_CURTIDA}</span><span className="num" aria-hidden="true"><span className="velho">{antes}</span><span className="novo">{depois}</span></span></span>
+      <span className="balao" aria-hidden="true">valeu! ❤</span>
     </button>
   );
 }
