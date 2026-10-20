@@ -1,5 +1,5 @@
 // Gera public/secoes.json a partir do CSV oficial da lista mais recente de seções alteradas
-// (ISO-8859-1, separado por ";"). Uso: npm run dados -- dados-fonte/secoes_eleitorais_alteradas_2t-pais_2026_recent.csv
+// (ISO-8859-1, separado por ";"). Uso: npm run dados -- dados-fonte/secoes_eleitorais_alteradas_2t-pais_2026_lista5.csv
 // Só entram os campos da consulta: não há votos nem dados pessoais (qt_eleitores é o total da seção).
 import fs from 'node:fs';
 import { parse } from 'csv-parse/sync';

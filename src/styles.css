@@ -434,3 +434,12 @@ html { scroll-behavior: smooth; }
 
 .icone-link.alto { vertical-align: super; margin-left: 2px; line-height: 1; opacity: 1; color: var(--red); position: relative; top: -.1em; } .icone-link.alto svg { display: block; }
 .cola { white-space: nowrap; }
+
+/* aviso de atualização do TSE (bem visível) */
+.aviso-tse { margin: 12px 0 14px; padding: 16px 18px; border: 2px solid var(--red-solid); border-radius: 16px; background: color-mix(in srgb, var(--red-solid) 9%, var(--panel)); display: grid; gap: 10px; }
+.aviso-tse-tit { margin: 0; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.08rem; color: var(--red); } .aviso-tse-tit svg { flex: none; }
+.aviso-tse-fonte { margin: 0; font-size: .85rem; color: var(--fg2); }
+.aviso-tse-grade { margin: 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; } @media (max-width: 700px) { .aviso-tse-grade { grid-template-columns: 1fr; gap: 8px; } }
+.aviso-tse-grade > div { padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+.aviso-tse-grade dt { font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); } .aviso-tse-grade dd { margin: 2px 0 0; font-weight: 700; font-size: 1rem; font-variant-numeric: tabular-nums; }
+.aviso-tse-baixada { margin: 0; font-size: .95rem; }
