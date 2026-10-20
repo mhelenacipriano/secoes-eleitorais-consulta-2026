@@ -1,6 +1,6 @@
 # Sua seção eleitoral mudou? · Consulta 2026
 
-Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (438 seções; a fonte não informa a data), com o onde votava e onde vai votar. Uma única busca por palavra-chave (cidade, estado por nome ou sigla, local, zona, seção) e filtros por campo, todos opcionais, sobre a lista completa, com ordenação, paginação e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
+Página estática (React + Vite) onde o eleitor informa **estado, município, zona e seção** e vê se a seção consta na **lista mais recente** de locais de votação alterados para o 2º turno de 2026 (441 seções; a fonte não informa a data), com o onde votava e onde vai votar. Uma única busca por palavra-chave (cidade, estado por nome ou sigla, local, zona, seção) e filtros por campo, todos opcionais, sobre a lista completa, com ordenação, paginação e exportação em CSV. As versões anteriores das listas não são usadas aqui; a comparação entre elas está na análise completa.
 
 Complementa a [análise completa](https://github.com/mhelenacipriano/secoes-eleitorais-analise): o rodapé tem o botão **Análise completa**.
 

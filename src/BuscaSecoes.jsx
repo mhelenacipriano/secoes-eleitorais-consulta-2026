@@ -6,7 +6,8 @@ import ShareButton from './ShareButton.jsx';
 
 export const VAZIO = { q: '', uf: '', mun: '', zona: '', secao: '', ini: '', fin: '' };
 const CHAVES_URL = { q: 'q', uf: 'uf', mun: 'm', zona: 'z', secao: 's', ini: 'i', fin: 'f' };
-const COLUNAS = [['secaoTxt', 'Seção'], ['ondeVotava', 'Onde votava'], ['ondeVaiVotar', 'Onde vai votar'], ['eleitores', 'Eleitores']];
+const COLUNAS = [['estado', 'Estado'], ['municipio', 'Município'], ['zona', 'Zona'], ['secao', 'Seção'], ['ondeVotava', 'Onde votava'], ['ondeVaiVotar', 'Onde vai votar'], ['eleitores', 'Eleitores']];
+const NUMERICAS = ['zona', 'secao', 'eleitores'];
 const OFICIAL = 'Confirme o seu local de votação nos canais oficiais da Justiça Eleitoral (o TRE do seu estado ou o aplicativo e-Título) antes de ir votar.';
 
 export const lerFiltros = () => {
@@ -42,7 +43,7 @@ const campoNum = (v, set) => ({ value: v, onChange: (e) => set(e.target.value.re
 
 export default function BuscaSecoes({ dados }) {
   const [f, setF] = useState(lerFiltros);
-  const [ord, setOrd] = useState({ key: 'secaoTxt', dir: 1 });
+  const [ord, setOrd] = useState({ key: 'estado', dir: 1 });
   const [pag, setPag] = useState(0);
   const [tam, setTam] = useState(25);
   const [aberto, setAberto] = useState(() => window.innerWidth > 760 || Object.entries(lerFiltros()).some(([k, v]) => k !== 'q' && v));
@@ -50,14 +51,13 @@ export default function BuscaSecoes({ dados }) {
   const ativos = Object.values(f).filter((v) => v !== '').length;
   useEffect(() => { gravarFiltros(f); }, [f]);
 
-  const linhas = useMemo(() => dados.linhas.map((l) => ({ ...l, secaoTxt: `${l.uf} · ${l.municipio} · Z${l.zona} S${l.secao}` })), [dados]);
-  const filtradas = useMemo(() => filtrar(linhas, f), [linhas, f]);
+  const filtradas = useMemo(() => filtrar(dados.linhas, f), [dados, f]);
   const ordenadas = useMemo(() => {
     const { key, dir } = ord;
     return [...filtradas].sort((a, b) => {
       const x = a[key], y = b[key];
       const c = typeof x === 'number' ? x - y : String(x).localeCompare(String(y), 'pt-BR', { numeric: true });
-      return (c || a.uf.localeCompare(b.uf) || a.municipio.localeCompare(b.municipio, 'pt-BR') || a.zona - b.zona || a.secao - b.secao) * dir;
+      return (c || a.estado.localeCompare(b.estado, 'pt-BR') || a.municipio.localeCompare(b.municipio, 'pt-BR') || a.zona - b.zona || a.secao - b.secao) * dir;
     });
   }, [filtradas, ord]);
   const paginas = Math.max(1, Math.ceil(ordenadas.length / tam));
@@ -125,7 +125,7 @@ export default function BuscaSecoes({ dados }) {
             <thead>
               <tr>
                 {COLUNAS.map(([k, n]) => (
-                  <th key={k} scope="col" className={k === 'eleitores' ? 'num' : ''} aria-sort={ord.key === k ? (ord.dir > 0 ? 'ascending' : 'descending') : 'none'}>
+                  <th key={k} scope="col" className={NUMERICAS.includes(k) ? 'num' : ''} aria-sort={ord.key === k ? (ord.dir > 0 ? 'ascending' : 'descending') : 'none'}>
                     <button type="button" onClick={() => ordenar(k)}>{n}{ord.key === k ? (ord.dir > 0 ? ' ↑' : ' ↓') : ''}</button>
                   </th>
                 ))}
@@ -133,8 +133,11 @@ export default function BuscaSecoes({ dados }) {
             </thead>
             <tbody>
               {visiveis.map((l) => (
-                <tr key={l.secaoTxt}>
-                  <td data-label="Seção" className="c-secao"><span>{l.secaoTxt}</span><small>{l.estado}</small></td>
+                <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`}>
+                  <td data-label="Estado">{l.estado} <span className="uf">({l.uf})</span></td>
+                  <td data-label="Município">{l.municipio}</td>
+                  <td data-label="Zona" className="num">{l.zona}</td>
+                  <td data-label="Seção" className="num">{l.secao}</td>
                   <td data-label="Onde votava">{l.ondeVotava}</td>
                   <td data-label="Onde vai votar">{l.ondeVaiVotar}</td>
                   <td data-label="Eleitores" className="num">{l.eleitores.toLocaleString('pt-BR')}</td>

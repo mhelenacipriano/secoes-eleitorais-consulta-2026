@@ -9,7 +9,7 @@ export default function App() {
     <div className="app">
       <div className="topbar"><span className="brand">Seções eleitorais · 2026</span><ThemeToggle /></div>
       <main>
-        <p className="banner" role="note"><strong>Informação mais recente.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '438'} seções; a fonte não informa a data de publicação). As versões anteriores das listas não são usadas aqui — a comparação entre elas está na análise completa.</p>
+        <p className="banner" role="note"><strong>Informação mais recente.</strong> Esta página considera apenas a lista mais recente de seções com local de votação alterado ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções; a fonte não informa a data de publicação). As versões anteriores das listas não são usadas aqui — a comparação entre elas está na análise completa.</p>
         <header className="hero estreito">
           <p className="eyebrow">Eleições 2026 · 2º turno</p>
           <h1>Sua seção eleitoral mudou?</h1>
