@@ -91,7 +91,7 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
   .tabela, .tabela tbody, .tabela tr, .tabela td { display: block; width: 100%; }
   .tabela tr { padding: 12px 14px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
   .tabela td { padding: 0; border: 0; } .tabela td::before { content: attr(data-label); display: block; font-size: .7rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-  .tabela td[data-label="Local inicial"], .tabela td[data-label="Local final"], .tabela td[data-label="Município"], .tabela td[data-label="Listas"] { grid-column: 1 / -1; }
+  .tabela td[data-label="Onde votava"], .tabela td[data-label="Onde vai votar"], .tabela td[data-label="Município"], .tabela td[data-label="Listas"] { grid-column: 1 / -1; }
   .paginacao { justify-content: space-between; }
 }
 .disclaimer { max-width: 640px; }

@@ -33,8 +33,8 @@ function Resultado({ r, f, outra }) {
         <h2>{s.municipio} · {s.uf} — zona {s.zona}, seção {s.secao}</h2>
         <p>Esta seção consta na lista mais recente de locais de votação alterados.</p>
         <dl className="locais">
-          <div><dt>Local inicial</dt><dd>{s.localInicial}</dd></div>
-          <div><dt>Local final</dt><dd>{s.localFinal}{igual && <small> — igual ao local inicial nos registros</small>}</dd></div>
+          <div><dt>Onde votava</dt><dd>{s.localInicial}</dd></div>
+          <div><dt>Onde vai votar</dt><dd>{s.localFinal}{igual && <small> — igual ao de antes nos registros</small>}</dd></div>
         </dl>
         <p className="aviso">{AVISO}</p>
         <div className="res-acoes"><ShareButton className="btn" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Compartilhar esta consulta</ShareButton><button type="button" className="btn" onClick={outra}>Consultar outra seção</button></div>

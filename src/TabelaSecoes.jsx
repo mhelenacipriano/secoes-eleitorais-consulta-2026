@@ -4,7 +4,7 @@ import { norm } from './busca.js';
 
 const VAZIO = { q: '', uf: '', mun: '', zona: '', secao: '', ini: '', fin: '' };
 const COLUNAS = [
-  ['uf', 'UF'], ['municipio', 'Município'], ['zona', 'Zona'], ['secao', 'Seção'], ['localInicial', 'Local inicial'], ['localFinal', 'Local final'],
+  ['uf', 'UF'], ['municipio', 'Município'], ['zona', 'Zona'], ['secao', 'Seção'], ['localInicial', 'Onde votava'], ['localFinal', 'Onde vai votar'],
 ];
 
 function filtrar(linhas, f) {
@@ -19,7 +19,7 @@ function filtrar(linhas, f) {
 
 const csv = (linhas) => {
   const esc = (v) => (/[;"\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
-  const cab = ['UF', 'Município', 'Zona', 'Seção', 'Local inicial', 'Local final'];
+  const cab = ['UF', 'Município', 'Zona', 'Seção', 'Onde votava', 'Onde vai votar'];
   const corpo = linhas.map((l) => [l.uf, l.municipio, l.zona, l.secao, l.localInicial, l.localFinal].map(esc).join(';'));
   return '\ufeff' + [cab.map(esc).join(';'), ...corpo].join('\r\n');
 };
@@ -77,8 +77,8 @@ export default function TabelaSecoes({ dados }) {
             renderInput={(params) => <TextField {...params} label="Município" placeholder="Contém…" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
           <TextField label="Zona" value={f.zona} onChange={(e) => set('zona', e.target.value.replace(/\D/g, ''))} placeholder="Ex.: 12" slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />
           <TextField label="Seção" value={f.secao} onChange={(e) => set('secao', e.target.value.replace(/\D/g, ''))} placeholder="Ex.: 345" slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />
-          <TextField label="Local inicial" value={f.ini} onChange={(e) => set('ini', e.target.value)} placeholder="Contém…" slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField label="Local final" value={f.fin} onChange={(e) => set('fin', e.target.value)} placeholder="Contém…" slotProps={{ inputLabel: { shrink: true } }} />
+          <TextField label="Onde votava" value={f.ini} onChange={(e) => set('ini', e.target.value)} placeholder="Contém…" slotProps={{ inputLabel: { shrink: true } }} />
+          <TextField label="Onde vai votar" value={f.fin} onChange={(e) => set('fin', e.target.value)} placeholder="Contém…" slotProps={{ inputLabel: { shrink: true } }} />
           <TextField select className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
             {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
           </TextField>
@@ -110,7 +110,7 @@ export default function TabelaSecoes({ dados }) {
               {visiveis.map((l) => (
                 <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`}>
                   <td data-label="UF">{l.uf}</td><td data-label="Município">{l.municipio}</td><td data-label="Zona">{l.zona}</td><td data-label="Seção">{l.secao}</td>
-                  <td data-label="Local inicial">{l.localInicial}</td><td data-label="Local final">{l.localFinal}</td>
+                  <td data-label="Onde votava">{l.localInicial}</td><td data-label="Onde vai votar">{l.localFinal}</td>
                 </tr>
               ))}
             </tbody>
