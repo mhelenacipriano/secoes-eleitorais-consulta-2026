@@ -13,4 +13,4 @@ export const VERSOES = [
 
 // Chamada para a análise completa no rodapé (e a menção a ela no aviso do topo). Escondida por enquanto,
 // enquanto a análise é refinada: troque para true para voltar a exibir.
-export const MOSTRAR_ANALISE = false;
+export const MOSTRAR_ANALISE = true;
