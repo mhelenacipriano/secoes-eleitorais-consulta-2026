@@ -85,7 +85,7 @@ export default function Curtida() {
           : (
             <span className="dica-escrita" aria-hidden="true">
               clica aqui!
-              <svg viewBox="0 0 60 40" className="seta"><path d="M4 6 C 22 2, 44 10, 52 30" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" /><path d="M40 28 L53 33 L55 19" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+              <svg viewBox="0 0 40 44" className="seta"><path d="M6 10 C 18 8, 24 14, 22 28" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" /><path d="M14 22 L22 31 L28 21" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </span>
           )}
         <span className="balao" aria-hidden="true">valeu! ❤</span>
