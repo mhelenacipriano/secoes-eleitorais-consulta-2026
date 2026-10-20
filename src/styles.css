@@ -161,3 +161,5 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
 
 .banner.atencao { margin-top: 10px; border-color: var(--line); border-left: 4px solid var(--red); background: var(--panel); }
 .cartao-secao.nao .aviso { color: var(--fg2); }
+
+.foot .legal { margin-top: 4px; padding-top: 16px; border-top: 1px solid var(--line); font-size: .8rem; line-height: 1.55; color: var(--muted); max-width: 72ch; } .foot .legal strong { color: var(--fg2); }

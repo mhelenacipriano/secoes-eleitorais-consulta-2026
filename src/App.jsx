@@ -41,6 +41,7 @@ export default function App() {
         <p>Quer entender o que mudou nas listas e o que isso pode (ou não) significar?</p>
         <a className="btn primary big" href={ANALISE_URL}>Análise completa →</a>
         <p className="note">Os dados mostram o perfil das listas, não comprovam mudanças no resultado da eleição.</p>
+        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas e resultados divulgados pela Justiça Eleitoral (TSE e TREs); as comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
       </footer>
     </div>
   );
