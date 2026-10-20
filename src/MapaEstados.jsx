@@ -1,28 +1,32 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { nomeEstado } from './estados.js';
+import { ESTADOS, VIEWBOX } from './mapaBrasil.js';
 
-// Mapa em grade (cada estado é um quadrado, na posição aproximada do mapa): todos têm o mesmo tamanho, então os estados pequenos
-// não somem. [coluna, linha]
-const POS = {
-  RR: [2, 0], AP: [3, 0],
-  AM: [1, 1], PA: [2, 1], MA: [3, 1], PI: [4, 1], CE: [5, 1], RN: [6, 1],
-  AC: [0, 2], RO: [1, 2], MT: [2, 2], TO: [3, 2], BA: [4, 2], PE: [5, 2], PB: [6, 2],
-  MS: [2, 3], GO: [3, 3], DF: [4, 3], SE: [5, 3], AL: [6, 3],
-  SP: [3, 4], MG: [4, 4], ES: [5, 4],
-  PR: [3, 5], RJ: [4, 5],
-  SC: [3, 6], RS: [3, 7],
-};
 const NIVEIS = 5;
+// estados pequenos do litoral: o rótulo vai para o mar, ligado ao estado por uma linha; no DF (dentro de GO) só o número
+const FORA_NE = ['RN', 'PB', 'PE', 'AL', 'SE'], FORA_SE = ['ES', 'RJ'], X_NE = 436, X_SE = 372, ESPACO = 11;
+const empilha = (lista, x, ys) => { // distribui os rótulos na vertical sem sobreposição, mantendo a ordem do litoral (de cima para baixo)
+  const ord = [...lista].sort((a, b) => ESTADOS[a].cy - ESTADOS[b].cy); let y = -1e9; const out = {};
+  for (const u of ord) { y = Math.max(ESTADOS[u].cy, y + ESPACO); out[u] = { x, y }; }
+  return out;
+};
+const FORA = { ...empilha(FORA_NE, X_NE), ...empilha(FORA_SE, X_SE) };
+const PEQUENOS = new Set(['DF']);
+const CAIXA = [VIEWBOX[0], VIEWBOX[1], VIEWBOX[2] + 50, VIEWBOX[3]];
 
-/** Mapa clicável: a cor (e o número) mostram quantas seções com local alterado há em cada estado; clicar escolhe o estado. */
+/** Mapa do Brasil clicável: o tom de vermelho e o número mostram quantas seções com local alterado há em cada estado; clicar escolhe o estado. */
 export default function MapaEstados({ dados, uf, onEscolher }) {
+  const [foco, setFoco] = useState('');
   const { contagem, max } = useMemo(() => {
     const c = {};
     for (const l of dados.linhas) c[l.uf] = (c[l.uf] || 0) + 1;
     return { contagem: c, max: Math.max(1, ...Object.values(c)) };
   }, [dados]);
   const nivel = (n) => (n === 0 ? 0 : Math.min(NIVEIS, 1 + Math.floor((Math.sqrt(n / max) * NIVEIS) - 1e-9)));
-  const ufs = Object.keys(POS);
+  const ufs = Object.keys(ESTADOS).sort((a, b) => (a === uf) - (b === uf)); // o selecionado por último: o contorno fica por cima dos vizinhos
+  const mostrado = foco || uf;
+  const leitura = mostrado ? `${nomeEstado(mostrado)} (${mostrado}): ${contagem[mostrado] || 0} ${(contagem[mostrado] || 0) === 1 ? 'seção alterada' : 'seções alteradas'}${mostrado === uf ? ' · selecionado' : ''}` : 'Passe o mouse ou toque num estado para ver o total.';
+  const escolher = (u) => { if (!(contagem[u] > 0)) return; onEscolher(uf === u ? '' : u); };
   return (
     <section className="mapa-sec" aria-labelledby="titulo-mapa">
       <div className="consulta-cab">
@@ -30,20 +34,31 @@ export default function MapaEstados({ dados, uf, onEscolher }) {
         <p>Clique num estado para ver as seções dele. Quanto mais escuro, mais seções com local de votação alterado na lista mais recente.</p>
       </div>
       <div className="mapa-corpo">
-        <ul className="mapa" role="list" aria-label="Mapa de estados">
+        <svg className="mapa" viewBox={CAIXA.join(' ')} role="group" aria-label="Mapa do Brasil por estado">
           {ufs.map((u) => {
-            const n = contagem[u] || 0, [x, y] = POS[u], sel = uf === u;
+            const n = contagem[u] || 0, e = ESTADOS[u], sel = uf === u;
             return (
-              <li key={u}>
-                <button type="button" className={`uf n${nivel(n)}${sel ? ' sel' : ''}`} aria-pressed={sel} disabled={n === 0} style={{ gridColumn: x + 1, gridRow: y + 1 }}
-                  aria-label={`${nomeEstado(u)}: ${n} ${n === 1 ? 'seção alterada' : 'seções alteradas'}${sel ? ' (selecionado)' : ''}`} title={`${nomeEstado(u)} · ${n}`}
-                  onClick={() => onEscolher(sel ? '' : u)}>
-                  <b>{u}</b><span>{n}</span>
-                </button>
-              </li>
+              <g key={u} className={`uf n${nivel(n)}${sel ? ' sel' : ''}`} role="button" tabIndex={n > 0 ? 0 : -1} aria-disabled={n === 0} aria-pressed={sel}
+                aria-label={`${nomeEstado(u)}: ${n} ${n === 1 ? 'seção alterada' : 'seções alteradas'}${sel ? ' (selecionado)' : ''}`}
+                onClick={() => escolher(u)} onKeyDown={(ev) => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); escolher(u); } }}
+                onMouseEnter={() => setFoco(u)} onMouseLeave={() => setFoco('')} onFocus={() => setFoco(u)} onBlur={() => setFoco('')}>
+                <path d={e.d} />
+                {FORA[u] ? (
+                  <>
+                    <line className="lig" x1={e.cx} y1={e.cy} x2={FORA[u].x - 2} y2={FORA[u].y} />
+                    <circle className="pt" cx={e.cx} cy={e.cy} r="1.6" />
+                    <text className="ext" x={FORA[u].x} y={FORA[u].y} dy=".35em" aria-hidden="true"><tspan className="sig">{u}</tspan> {n}</text>
+                  </>
+                ) : (
+                  <text x={e.cx} y={e.cy} textAnchor="middle" aria-hidden="true">
+                    {PEQUENOS.has(u) ? <tspan x={e.cx} dy=".35em">{n}</tspan> : <><tspan x={e.cx} dy="-.15em" className="sig">{u}</tspan><tspan x={e.cx} dy="1.05em">{n}</tspan></>}
+                  </text>
+                )}
+              </g>
             );
           })}
-        </ul>
+        </svg>
+        <p className="mapa-leitura" aria-live="polite">{leitura}</p>
         <div className="mapa-leg" aria-hidden="true"><span>menos</span><i className="n1" /><i className="n2" /><i className="n3" /><i className="n4" /><i className="n5" /><span>mais seções</span></div>
       </div>
     </section>

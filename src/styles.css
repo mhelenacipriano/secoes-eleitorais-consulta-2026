@@ -387,18 +387,22 @@ html { scroll-behavior: smooth; }
 .stats-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; } @media (max-width: 560px) { .stats-cols { grid-template-columns: 1fr; } }
 .stats-lista { margin: 0; padding: 0 0 0 1.2em; display: grid; gap: 4px; font-size: .88rem; } ul.stats-lista { list-style: none; padding: 0; } .stats-lista b { margin-left: 6px; font-variant-numeric: tabular-nums; } .stats-lista time { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
 
-/* ================= Mapa de estados (grade) ================= */
+/* ================= Mapa do Brasil (contornos dos estados) ================= */
 .mapa-sec { margin-top: 28px; }
-.mapa-corpo { display: grid; justify-items: center; gap: 12px; margin-top: 12px; }
-.mapa { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(7, var(--t)); grid-template-rows: repeat(8, var(--t)); gap: 5px; --t: clamp(40px, 11.5vw, 58px); }
-.mapa li { display: contents; }
-.uf { width: 100%; height: 100%; margin: 0; padding: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--fg); display: grid; place-content: center; gap: 0; line-height: 1.1; font: inherit; cursor: pointer; transition: background-color .25s ease, border-color .2s ease, color .2s ease; }
-.uf b { font-size: .86rem; font-weight: 600; } .uf span { font-size: .68rem; font-variant-numeric: tabular-nums; opacity: .85; }
-.uf.n1 { background: color-mix(in srgb, var(--red-solid) 14%, var(--panel)); } .uf.n2 { background: color-mix(in srgb, var(--red-solid) 30%, var(--panel)); }
-.uf.n3 { background: color-mix(in srgb, var(--red-solid) 50%, var(--panel)); } .uf.n4 { background: var(--red-solid); color: var(--on-red, #fff); } .uf.n5 { background: color-mix(in srgb, var(--red-solid) 80%, #000); color: #fff; }
-.uf.n0 { border-style: dashed; color: var(--muted); cursor: default; background: transparent; }
-.uf:not(:disabled):hover { border-color: var(--red); }
-.uf.sel { outline: 3px solid var(--fg); outline-offset: 1px; }
+.mapa-corpo { display: grid; justify-items: center; gap: 10px; margin-top: 12px; }
+.mapa { width: min(100%, 460px); height: auto; overflow: visible; -webkit-tap-highlight-color: transparent; }
+.mapa .uf { cursor: pointer; outline: none; color: var(--fg); }
+.mapa .uf path { fill: var(--panel); stroke: var(--bg); stroke-width: 1.2; stroke-linejoin: round; transition: fill .25s ease, stroke .2s ease; }
+.mapa .uf.n1 path { fill: color-mix(in srgb, var(--red-solid) 14%, var(--panel)); } .mapa .uf.n2 path { fill: color-mix(in srgb, var(--red-solid) 30%, var(--panel)); }
+.mapa .uf.n3 path { fill: color-mix(in srgb, var(--red-solid) 50%, var(--panel)); } .mapa .uf.n4 path { fill: var(--red-solid); } .mapa .uf.n5 path { fill: color-mix(in srgb, var(--red-solid) 80%, #000); }
+.mapa .uf.n0 { cursor: default; color: var(--muted); } .mapa .uf.n0 path { fill: var(--panel2); stroke: var(--line); }
+.mapa .uf.n4, .mapa .uf.n5 { color: #fff; }
+.mapa text { font-size: 9px; font-weight: 600; fill: currentColor; pointer-events: none; font-variant-numeric: tabular-nums; } .mapa text .sig { font-size: 8px; font-weight: 700; letter-spacing: .02em; }
+.mapa .uf:not(.n0):hover path, .mapa .uf:focus-visible path { stroke: var(--fg); stroke-width: 2; }
+.mapa .uf.sel path { stroke: var(--fg); stroke-width: 2; }
+.mapa .lig { stroke: var(--muted); stroke-width: .7; } .mapa .pt { fill: var(--fg); } .mapa text.ext { fill: var(--fg); text-anchor: start; } .mapa .uf.n0 text.ext { fill: var(--muted); }
+.mapa .uf:focus-visible path { stroke-dasharray: 5 3; }
+.mapa-leitura { margin: 0; min-height: 1.4em; font-size: .92rem; color: var(--fg2); text-align: center; }
 .mapa-leg { display: flex; align-items: center; gap: 4px; font-size: .78rem; color: var(--muted); } .mapa-leg i { width: 22px; height: 12px; border-radius: 3px; border: 1px solid var(--line); }
 .mapa-leg .n1 { background: color-mix(in srgb, var(--red-solid) 14%, var(--panel)); } .mapa-leg .n2 { background: color-mix(in srgb, var(--red-solid) 30%, var(--panel)); } .mapa-leg .n3 { background: color-mix(in srgb, var(--red-solid) 50%, var(--panel)); } .mapa-leg .n4 { background: var(--red-solid); } .mapa-leg .n5 { background: color-mix(in srgb, var(--red-solid) 80%, #000); }
 .mapa-leg span:first-child { margin-right: 4px; } .mapa-leg span:last-child { margin-left: 4px; }
