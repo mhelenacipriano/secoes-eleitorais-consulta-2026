@@ -52,7 +52,7 @@ export default function App() {
             <p className="note">Os dados mostram o perfil das listas, não comprovam mudanças no resultado da eleição.</p>
           </div>
         )}
-        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas divulgadas pela Justiça Eleitoral; a lista mais recente usada nesta busca vem do <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Seções alteradas do SIG/TSE</a>. As comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
+        <p className="legal"><strong>Sobre os dados e este site.</strong> O TSE divulgou três listas — relações das seções eleitorais cujo local de votação mudou para o 2º turno — em 18/10 às 11h, 18/10 às 17h e 19/10 às 11h. Esta busca usa a versão mais recente, do <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Seções alteradas do SIG/TSE</a>.{MOSTRAR_ANALISE ? ' A análise geral desses dados, feita por este projeto, está em “Análise completa”.' : ''} Este é um site independente e sem fins lucrativos, sem anúncios, não oficial e sem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: confirme o seu local de votação no aplicativo e-Título ou no Autoatendimento Eleitoral do TSE.</p>
       </footer>
     </div>
   );
