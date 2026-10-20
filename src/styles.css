@@ -299,3 +299,11 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
   .tabela tbody td { padding: 0; border: 0; }
   .tabela tbody td.c-mun { padding-top: 2px; } .tabela tbody td.c-zs { padding-bottom: 2px; }
 }
+
+/* chamada para a análise completa: bloco com respiro e destaque */
+.foot { gap: 22px; margin-top: 44px; }
+.cta-analise { width: 100%; display: grid; justify-items: start; gap: 18px; padding: clamp(22px, 4vw, 36px); border-radius: 18px; border: 1px solid color-mix(in srgb, var(--red) 35%, var(--line)); background: color-mix(in srgb, var(--red) 7%, var(--panel)); }
+.cta-analise .foot-cta { max-width: 34ch; }
+.cta-analise .note { max-width: 60ch; }
+@media (max-width: 760px) { .foot { gap: 16px; margin-top: 32px; } .cta-analise { padding: 20px 18px; gap: 14px; border-radius: 16px; } .cta-analise .btn.big { width: 100%; } }
+.cta-analise .foot-cta { font-family: var(--serif); font-size: clamp(1.3rem, 3.2vw, 1.65rem); line-height: 1.25; max-width: 30ch; color: var(--fg); }
