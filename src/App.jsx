@@ -1,4 +1,5 @@
-import { ANALISE_URL, FONTE_URL, MOSTRAR_ANALISE, VERSOES } from './config.js';
+import { ANALISE_URL, MOSTRAR_ANALISE, VERSOES } from './config.js';
+import LinkFonte from './LinkFonte.jsx';
 import { useDados } from './busca.js';
 import ThemeToggle from './ThemeToggle.jsx';
 import { useState } from 'react';
@@ -23,7 +24,7 @@ export default function App() {
           <p className="banner-tit"><strong>Este não é um site oficial. Confirmar o seu local de votação no e-Título é de extrema importância.</strong></p>
           <p className="banner-resumo">Esta busca usa apenas a versão mais recente divulgada pelo TSE ({dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções).</p>
           <div className="banner-det" id="aviso-detalhes"><div className="banner-det-in">
-            <p>Foram divulgadas três listas datadas de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a versão mais recente, disponível no site original do TSE (<a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Seções alteradas do SIG/TSE</a>) — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções, com data de publicação não informada na fonte. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
+            <p>Foram divulgadas três listas datadas de seções com local de votação alterado: {VERSOES.map((v, i) => <span key={v.quando}>{i > 0 && (i === VERSOES.length - 1 ? ' e ' : ', ')}{v.quando} ({v.secoes.toLocaleString('pt-BR')} seções)</span>)}. Esta busca considera apenas a versão mais recente, disponível no site original do <span className="cola">TSE<LinkFonte alto /></span> — {dados ? dados.linhas.length.toLocaleString('pt-BR') : '441'} seções, com data de publicação não informada na fonte. As listas anteriores não são usadas aqui{MOSTRAR_ANALISE ? ' (a comparação está na análise completa)' : ''}.</p>
             <p>A lista pode ficar desatualizada, e seções que saíram das listas podem ter mantido, desfeito ou corrigido a mudança: não conseguimos confirmar. Antes de ir votar, confira o seu local no aplicativo <strong>e-Título</strong> ou no Autoatendimento Eleitoral do TSE.</p>
           </div></div>
           <button type="button" className="banner-toggle" aria-expanded={avisoAberto} aria-controls="aviso-detalhes" onClick={() => setAvisoAberto((x) => !x)}>{avisoAberto ? 'Ocultar detalhes' : 'Ver detalhes e fonte'}</button>
@@ -60,7 +61,7 @@ export default function App() {
             <p className="note">É um retrato dos dados, não uma prova de que o resultado da eleição mudou.</p>
           </div>
         )}
-        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas divulgadas pela Justiça Eleitoral; a lista mais recente usada nesta busca vem do <a href={FONTE_URL} target="_blank" rel="noopener noreferrer">painel Seções alteradas do SIG/TSE</a>. As comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
+        <p className="legal"><strong>Sobre os dados e este site.</strong> Os dados exibidos são provenientes de listas divulgadas pela Justiça Eleitoral; a lista mais recente usada nesta busca vem do painel Seções alteradas do SIG/<span className="cola">TSE<LinkFonte alto />.</span> As comparações, os cálculos e a forma de apresentação são de responsabilidade deste projeto. Este é um site independente e sem fins lucrativos, sem anúncios, e não é um canal oficial nem tem vínculo com a Justiça Eleitoral. As informações podem conter erros ou ficar desatualizadas: para confirmar o seu local de votação, use o aplicativo e-Título ou o Autoatendimento Eleitoral do TSE.</p>
       </footer>
       <Curtida />
     </div>

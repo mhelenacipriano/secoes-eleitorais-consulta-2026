@@ -431,3 +431,6 @@ html { scroll-behavior: smooth; }
 @media (max-width: 520px) { .curtida .dica-texto { font-size: 1.35rem; } }
 @media (prefers-reduced-motion: reduce) { .curtida.pulo .estrela, .curtida .dica-escrita { animation: none !important; } .chuva { display: none; } }
 @media print { .chuva, .curtida .dica-escrita { display: none !important; } }
+
+.icone-link.alto { vertical-align: super; margin-left: 2px; line-height: 1; opacity: 1; color: var(--red); position: relative; top: -.1em; } .icone-link.alto svg { display: block; }
+.cola { white-space: nowrap; }
