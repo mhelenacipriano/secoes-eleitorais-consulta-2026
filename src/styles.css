@@ -109,3 +109,20 @@ h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.3rem, 9vw, 
   .tabela td.num { text-align: left; }
   .resumo-acoes { width: 100%; } .resumo-acoes > * { flex: 1 1 auto; }
 }
+
+/* ---------- Cartão da tabela: Buscar no topo, filtros discretos ---------- */
+.tabela-card { border: 1px solid var(--line); border-radius: 16px; background: var(--panel); overflow: hidden; }
+.tabela-topo { padding: 16px; display: grid; gap: 8px; border-bottom: 1px solid var(--line); }
+.topo-linha { display: flex; align-items: center; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; }
+.topo-linha .dica-busca { flex: 1 1 18rem; margin: 0; }
+.filtros-toggle { all: unset; box-sizing: border-box; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 8px; border-radius: 8px; font-size: .85rem; color: var(--muted); }
+.filtros-toggle:hover { color: var(--fg); background: var(--panel2); } .filtros-toggle:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; } .filtros-toggle .seta { font-size: .7rem; }
+.tabela-topo .filtros-grid { padding: 8px 0 0; margin: 0; }
+.tabela-topo .count { margin-left: 0; }
+.tabela-card .resumo-tabela { padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); font-size: .9rem; }
+.link-acao { all: unset; box-sizing: border-box; cursor: pointer; min-height: 36px; display: inline-flex; align-items: center; padding: 0 10px; border-radius: 8px; font-size: .8125rem; font-weight: 500; letter-spacing: .02em; color: inherit; } .link-acao:hover { background: var(--panel2); } .link-acao:focus-visible { outline: 2px solid var(--red); }
+.tabela-card .tabela-wrap { border: 0; border-radius: 0; }
+.tabela-card .paginacao { padding: 12px 16px; border-top: 1px solid var(--line); }
+.tabela-card .vazio { border: 0; border-radius: 0; }
+@media (max-width: 760px) { .tabela-card .resumo-acoes { width: auto; } .tabela-topo { padding: 12px; } .tabela-card .resumo-tabela { padding: 8px 12px; } }
+.link-acao:disabled { opacity: .45; cursor: default; }

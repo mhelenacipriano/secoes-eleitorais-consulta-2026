@@ -46,9 +46,9 @@ export default function BuscaSecoes({ dados }) {
   const [ord, setOrd] = useState({ key: 'estado', dir: 1 });
   const [pag, setPag] = useState(0);
   const [tam, setTam] = useState(25);
-  const [aberto, setAberto] = useState(() => window.innerWidth > 760 || Object.entries(lerFiltros()).some(([k, v]) => k !== 'q' && v));
+  const [aberto, setAberto] = useState(() => Object.entries(lerFiltros()).some(([k, v]) => k !== 'q' && v));
   const set = (k, v) => { setPag(0); setF((x) => ({ ...x, [k]: v })); };
-  const ativos = Object.values(f).filter((v) => v !== '').length;
+  const filtrosAtivos = Object.entries(f).filter(([k, v]) => k !== 'q' && v !== '').length;
   useEffect(() => { gravarFiltros(f); }, [f]);
 
   const filtradas = useMemo(() => filtrar(dados.linhas, f), [dados, f]);
@@ -65,7 +65,7 @@ export default function BuscaSecoes({ dados }) {
   const visiveis = ordenadas.slice(p * tam, (p + 1) * tam);
   const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.municipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
   const sugestoes = f.uf ? dados.municipios[f.uf] || [] : todosMunicipios;
-  const filtrando = ativos > 0;
+  const filtrando = filtrosAtivos > 0 || f.q !== '';
 
   const ordenar = (key) => { setPag(0); setOrd((o) => (o.key === key ? { key, dir: -o.dir } : { key, dir: 1 })); };
   const limpar = () => { setF(VAZIO); setPag(0); };
@@ -78,85 +78,90 @@ export default function BuscaSecoes({ dados }) {
   return (
     <section className="lista-completa" aria-labelledby="titulo-lista">
       <h2 id="titulo-lista" className="sr">Buscar seções</h2>
-      <div className="busca-rapida">
-        <TextField id="busca-geral" type="search" fullWidth autoFocus={false} label="Buscar" placeholder="Cidade, estado, local, zona ou seção" value={f.q} onChange={(e) => set('q', e.target.value)}
-          slotProps={{ inputLabel: { shrink: true }, input: { startAdornment: <InputAdornment position="start"><Lupa /></InputAdornment> } }} />
-        <p className="dica-busca">Dica: tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Nenhum campo é obrigatório.</p>
-      </div>
-
-      <details className="filtros" open={aberto} onToggle={(e) => setAberto(e.currentTarget.open)}>
-        <summary>Filtros por campo{ativos > 0 && <span className="count">{ativos}</span>}</summary>
-        <div className="filtros-grid">
-          <Autocomplete options={dados.ufs} value={f.uf || null} onChange={(_, v) => { setPag(0); setF((x) => ({ ...x, uf: v || '', mun: '' })); }}
-            getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
-            filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
-            noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
-          <Autocomplete freeSolo options={sugestoes} inputValue={f.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
-            renderInput={(params) => <TextField {...params} label="Município" placeholder="Contém…" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
-          <TextField label="Zona" placeholder="Ex.: 12" {...campoNum(f.zona, (v) => set('zona', v))} />
-          <TextField label="Seção" placeholder="Ex.: 345" {...campoNum(f.secao, (v) => set('secao', v))} />
-          <TextField label="Onde votava" placeholder="Contém…" value={f.ini} onChange={(e) => set('ini', e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField label="Onde vai votar" placeholder="Contém…" value={f.fin} onChange={(e) => set('fin', e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
-          <TextField select className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
-            {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
-          </TextField>
+      <div className="tabela-card">
+        <div className="tabela-topo">
+          <TextField id="busca-geral" type="search" fullWidth label="Buscar" placeholder="Cidade, estado, local, zona ou seção" value={f.q} onChange={(e) => set('q', e.target.value)}
+            slotProps={{ inputLabel: { shrink: true }, input: { startAdornment: <InputAdornment position="start"><Lupa /></InputAdornment> } }} />
+          <div className="topo-linha">
+            <p className="dica-busca">Tente “Rio Grande do Sul”, “RS”, “Catuípe” ou “Z23 S370”. Nenhum campo é obrigatório.</p>
+            <button type="button" className="filtros-toggle" aria-expanded={aberto} aria-controls="painel-filtros" onClick={() => setAberto((x) => !x)}>
+              Filtros{filtrosAtivos > 0 && <span className="count">{filtrosAtivos}</span>}<span aria-hidden="true" className="seta">{aberto ? '▴' : '▾'}</span>
+            </button>
+          </div>
+          {aberto && (
+            <div className="filtros-grid" id="painel-filtros">
+              <Autocomplete options={dados.ufs} value={f.uf || null} onChange={(_, v) => { setPag(0); setF((x) => ({ ...x, uf: v || '', mun: '' })); }}
+                getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
+                filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
+                noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} size="small" label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+              <Autocomplete freeSolo options={sugestoes} inputValue={f.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
+                renderInput={(params) => <TextField {...params} size="small" label="Município" placeholder="Contém…" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+              <TextField size="small" label="Zona" placeholder="Ex.: 12" {...campoNum(f.zona, (v) => set('zona', v))} />
+              <TextField size="small" label="Seção" placeholder="Ex.: 345" {...campoNum(f.secao, (v) => set('secao', v))} />
+              <TextField size="small" label="Onde votava" placeholder="Contém…" value={f.ini} onChange={(e) => set('ini', e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+              <TextField size="small" label="Onde vai votar" placeholder="Contém…" value={f.fin} onChange={(e) => set('fin', e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
+              <TextField select size="small" className="so-mobile" label="Ordenar por" value={`${ord.key}:${ord.dir}`} onChange={(e) => { const [key, dir] = e.target.value.split(':'); setOrd({ key, dir: Number(dir) }); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
+                {COLUNAS.flatMap(([k, n]) => [<option key={k + 1} value={`${k}:1`}>{n} (A–Z)</option>, <option key={k + 2} value={`${k}:-1`}>{n} (Z–A)</option>])}
+              </TextField>
+            </div>
+          )}
         </div>
-      </details>
 
-      <div className="resumo-tabela" aria-live="polite">
-        <span><strong>{ordenadas.length.toLocaleString('pt-BR')}</strong> de {dados.linhas.length.toLocaleString('pt-BR')} seções{filtrando ? ' encontradas' : ' na lista mais recente'}</span>
-        <div className="resumo-acoes">
-          {filtrando && <Button variant="text" color="inherit" onClick={limpar}>Limpar busca</Button>}
-          <ShareButton className="btn" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Copiar link da busca</ShareButton>
-          <Button variant="outlined" color="inherit" onClick={baixar} disabled={!ordenadas.length}>Baixar CSV</Button>
+        <div className="resumo-tabela" aria-live="polite">
+          <span><strong>{ordenadas.length.toLocaleString('pt-BR')}</strong> de {dados.linhas.length.toLocaleString('pt-BR')} seções{filtrando ? ' encontradas' : ' na lista mais recente'}</span>
+          <div className="resumo-acoes">
+            {filtrando && <button type="button" className="link-acao" onClick={limpar}>Limpar busca</button>}
+            <ShareButton className="link-acao" titulo="Sua seção eleitoral mudou?" texto="Consulte se a sua seção consta na lista mais recente de locais de votação alterados.">Copiar link</ShareButton>
+            <button type="button" className="link-acao" onClick={baixar} disabled={!ordenadas.length}>Baixar CSV</button>
+          </div>
         </div>
-      </div>
 
-      {ordenadas.length === 0 ? (
-        <div className="vazio" role="status">
-          <p><strong>Nenhuma seção encontrada na lista mais recente.</strong></p>
-          <p>Se você procurava a sua seção, ela não consta nessa lista. Confira estado, município, zona e seção no seu título de eleitor. {OFICIAL}</p>
-          <Button variant="contained" onClick={limpar}>Limpar busca</Button>
-        </div>
-      ) : (
-        <div className="tabela-wrap">
-          <table className="tabela">
-            <caption className="sr">Seções da lista mais recente de locais de votação alterados</caption>
-            <thead>
-              <tr>
-                {COLUNAS.map(([k, n]) => (
-                  <th key={k} scope="col" className={NUMERICAS.includes(k) ? 'num' : ''} aria-sort={ord.key === k ? (ord.dir > 0 ? 'ascending' : 'descending') : 'none'}>
-                    <button type="button" onClick={() => ordenar(k)}>{n}{ord.key === k ? (ord.dir > 0 ? ' ↑' : ' ↓') : ''}</button>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {visiveis.map((l) => (
-                <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`}>
-                  <td data-label="Estado">{l.estado} <span className="uf">({l.uf})</span></td>
-                  <td data-label="Município">{l.municipio}</td>
-                  <td data-label="Zona" className="num">{l.zona}</td>
-                  <td data-label="Seção" className="num">{l.secao}</td>
-                  <td data-label="Onde votava">{l.ondeVotava}</td>
-                  <td data-label="Onde vai votar">{l.ondeVaiVotar}</td>
-                  <td data-label="Eleitores" className="num">{l.eleitores.toLocaleString('pt-BR')}</td>
+        {ordenadas.length === 0 ? (
+          <div className="vazio" role="status">
+            <p><strong>Nenhuma seção encontrada na lista mais recente.</strong></p>
+            <p>Se você procurava a sua seção, ela não consta nessa lista. Confira estado, município, zona e seção no seu título de eleitor. {OFICIAL}</p>
+            <Button variant="contained" onClick={limpar}>Limpar busca</Button>
+          </div>
+        ) : (
+          <div className="tabela-wrap">
+            <table className="tabela">
+              <caption className="sr">Seções da lista mais recente de locais de votação alterados</caption>
+              <thead>
+                <tr>
+                  {COLUNAS.map(([k, n]) => (
+                    <th key={k} scope="col" className={NUMERICAS.includes(k) ? 'num' : ''} aria-sort={ord.key === k ? (ord.dir > 0 ? 'ascending' : 'descending') : 'none'}>
+                      <button type="button" onClick={() => ordenar(k)}>{n}{ord.key === k ? (ord.dir > 0 ? ' ↑' : ' ↓') : ''}</button>
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+              </thead>
+              <tbody>
+                {visiveis.map((l) => (
+                  <tr key={`${l.uf}-${l.municipio}-${l.zona}-${l.secao}`}>
+                    <td data-label="Estado">{l.estado} <span className="uf">({l.uf})</span></td>
+                    <td data-label="Município">{l.municipio}</td>
+                    <td data-label="Zona" className="num">{l.zona}</td>
+                    <td data-label="Seção" className="num">{l.secao}</td>
+                    <td data-label="Onde votava">{l.ondeVotava}</td>
+                    <td data-label="Onde vai votar">{l.ondeVaiVotar}</td>
+                    <td data-label="Eleitores" className="num">{l.eleitores.toLocaleString('pt-BR')}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
-      {ordenadas.length > 0 && (
-        <div className="paginacao">
-          <TextField select size="small" label="Linhas por página" value={tam} onChange={(e) => { setTam(Number(e.target.value)); setPag(0); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
-            {[25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
-          </TextField>
-          <span>{p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
-          <Pagination count={paginas} page={p + 1} onChange={(_, v) => { setPag(v - 1); document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' }); }} color="primary" shape="rounded" siblingCount={0} boundaryCount={1} aria-label="Paginação da tabela" />
-        </div>
-      )}
+        {ordenadas.length > 0 && (
+          <div className="paginacao">
+            <TextField select size="small" label="Linhas por página" value={tam} onChange={(e) => { setTam(Number(e.target.value)); setPag(0); }} slotProps={{ select: { native: true }, inputLabel: { shrink: true } }}>
+              {[25, 50, 100].map((n) => <option key={n} value={n}>{n}</option>)}
+            </TextField>
+            <span>{p * tam + 1}–{Math.min((p + 1) * tam, ordenadas.length)} de {ordenadas.length.toLocaleString('pt-BR')}</span>
+            <Pagination count={paginas} page={p + 1} onChange={(_, v) => { setPag(v - 1); document.getElementById('titulo-lista')?.scrollIntoView({ behavior: 'smooth' }); }} color="primary" shape="rounded" siblingCount={0} boundaryCount={1} aria-label="Paginação da tabela" />
+          </div>
+        )}
+      </div>
       <p className="note">Constar na lista não prova, por si só, que o local de votação mudou. {OFICIAL}</p>
     </section>
   );
