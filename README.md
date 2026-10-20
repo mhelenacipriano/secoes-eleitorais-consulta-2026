@@ -55,5 +55,6 @@ Sem essas variáveis o site funciona normalmente e o contador fica desligado. N�
 
 ## Atualização das listas do TSE
 
-`node scripts/gerar-dados.mjs <link .csv.zip | arquivo>` baixa, confere e grava `public/secoes.json` com a lista mais recente, mais `meta` (quando foi publicada e baixada) e `historico` (uma linha por lista). O aviso do topo e os textos de datas vêm desses metadados, sem nada escrito à mão. Se a lista for igual à atual, não muda nada.
-O link do CDN muda a cada publicação e só aparece no painel do SIG/TSE (que bloqueia data centers): use o workflow *Atualizar lista do TSE* (Run workflow + link) ou a rotina local do repositório da análise (`scripts/atualizar-tudo.mjs`, com `CONSULTA_DIR` apontando para este projeto).
+`node scripts/gerar-dados.mjs <link .csv.zip | arquivo> [--publicada-em ISO] [--fonte texto]` baixa, confere e grava `public/secoes.json` com a lista mais recente, mais `meta` (quando foi publicada e baixada) e `historico` (uma linha por lista). O aviso do topo e os textos de datas vêm desses metadados, sem nada escrito à mão. Se a lista for igual à atual (diferenças só de espaços não contam), não muda nada.
+
+O painel do SIG/TSE bloqueia data centers (403) e não tem link de download na página; quem lê o painel é a rotina local do repositório da análise (`scripts/raspar-painel.mjs` + `scripts/atualizar-tudo.mjs`, com `CONSULTA_DIR` apontando para este projeto). Pelo GitHub, use *Actions → Atualizar lista do TSE → Run workflow* e cole o link do `.csv.zip`.

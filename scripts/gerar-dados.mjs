@@ -16,7 +16,9 @@ import { parse } from 'csv-parse/sync';
 const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const args = process.argv.slice(2);
 const opc = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
-const origem = args.find((a) => !a.startsWith('--') && a !== opc('--publicada-em'));
+const origem = args.find((a) => !a.startsWith('--') && a !== opc('--publicada-em') && a !== opc('--fonte'));
+const fonte = opc('--fonte');   // texto para o manifesto quando a origem é um arquivo local
+const ns = (t) => String(t || '').replace(/\s+/g, ' ').trim();   // o painel junta espaços repetidos: compara sem essa diferença
 const falha = (m) => { console.error('ERRO:', m); process.exit(1); };
 if (!origem) falha('Informe o link ou o arquivo da lista (veja o cabeçalho do script).');
 const saida = (k, v) => { if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `${k}<<EOF\n${v}\nEOF\n`); };
@@ -50,14 +52,15 @@ const destino = path.join(raiz, 'public/secoes.json');
 const atual = fs.existsSync(destino) ? JSON.parse(fs.readFileSync(destino, 'utf8')) : null;
 if (atual) {
   if (dados.length < atual.dados.length * 0.4 || dados.length > atual.dados.length * 2.5) falha(`${dados.length} seções contra ${atual.dados.length} na lista atual: variação grande demais, confira o arquivo.`);
-  if (JSON.stringify(atual.dados) === JSON.stringify(dados)) { console.log('Sem mudança: a lista é igual à que já está no site.'); saida('mudou', 'false'); process.exit(0); }
+  const norm = (d) => JSON.stringify(d.map((l) => l.map((c) => (typeof c === 'string' ? ns(c) : c))));
+  if (norm(atual.dados) === norm(dados)) { console.log('Sem mudança: a lista é igual à que já está no site.'); saida('mudou', 'false'); process.exit(0); }
 }
 
 const p = Object.fromEntries(new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }).formatToParts(pub).map((x) => [x.type, x.value]));
 const rotulo = `${p.day}/${p.month} · ${p.hour}h${p.minute === '00' ? '' : p.minute}`;
 const agora = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z'), publicadaIso = pub.toISOString().replace(/\.\d{3}Z$/, 'Z');
 const historico = [...((atual && atual.historico) || []).filter((h) => h.publicadaEm !== publicadaIso), { rotulo, secoes: dados.length, publicadaEm: publicadaIso }];
-const meta = { rotulo, publicadaEm: publicadaIso, baixadaEm: agora, secoes: dados.length, arquivo: /^https?:/.test(origem) ? origem : path.basename(origem) };
+const meta = { rotulo, publicadaEm: publicadaIso, baixadaEm: agora, secoes: dados.length, arquivo: /^https?:/.test(origem) ? origem : (fonte || path.basename(origem)) };
 fs.writeFileSync(destino, JSON.stringify({ gerado: 'lista mais recente', colunas: ['uf', 'municipio', 'zona', 'secao', 'ondeVotava', 'ondeVaiVotar', 'eleitores'], meta, historico, dados }));
 for (const f of fs.readdirSync(path.join(raiz, 'dados-fonte'))) if (f.endsWith('.csv')) fs.rmSync(path.join(raiz, 'dados-fonte', f));   // guarda só a lista atual
 fs.writeFileSync(path.join(raiz, 'dados-fonte', `lista_${p.year}${p.month}${p.day}_${p.hour}${p.minute}${p.second}.csv`), bytes);
