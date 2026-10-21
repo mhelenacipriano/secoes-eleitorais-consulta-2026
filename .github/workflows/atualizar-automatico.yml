@@ -1,0 +1,49 @@
+name: Atualizar lista do TSE (automático)
+
+# Lê o link da lista mais recente que o repositório da análise já descobriu (o workflow de lá lê o painel do TSE) e, se a lista
+# for nova, atualiza a busca. Roda 15 min depois do workflow da análise: 06:50, 11:50, 15:50 e 20:50 (Brasília = UTC−3).
+on:
+  schedule:
+    - cron: '50 9,14,18,23 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atualizar-lista
+  cancel-in-progress: false
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+      - run: npm ci
+
+      - name: Descobrir a lista mais recente (repositório da análise)
+        id: ultima
+        run: |
+          curl -fsS https://raw.githubusercontent.com/mhelenacipriano/secoes-eleitorais-analise/main/server/data/listas.json -o listas.json
+          node -e "const l=JSON.parse(require('fs').readFileSync('listas.json','utf8')).pop(); if(!/^https:\/\/cdn\.tse\.jus\.br\//.test(l.arquivo)) { console.log('::warning::A lista mais recente da análise não tem link do CDN: nada a fazer.'); process.exit(0) } const o=process.env.GITHUB_OUTPUT; require('fs').appendFileSync(o,'url='+l.arquivo+'\n'+'pub='+l.publicadaEm+'\n')"
+
+      - name: Gerar os dados (se a lista for nova) e conferir o build
+        id: gerar
+        if: steps.ultima.outputs.url != ''
+        env:
+          URL: ${{ steps.ultima.outputs.url }}
+        run: |
+          node scripts/gerar-dados.mjs "$URL"
+          npm run build
+
+      - name: Enviar para o repositório (a Vercel publica sozinha)
+        if: steps.gerar.outputs.mudou == 'true'
+        run: |
+          git config user.name "atualizador-listas"
+          git config user.email "actions@users.noreply.github.com"
+          git add public/secoes.json dados-fonte
+          git commit -m "Atualiza a lista do TSE: ${{ steps.gerar.outputs.resumo }}"
+          git push
