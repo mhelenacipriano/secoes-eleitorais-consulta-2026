@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import { TEXTO_CURTIDA } from './config.js';
 
-const FLAG = 'curtiu-o-site';          // já curtiu (o total do servidor já inclui)
+// Os dois marcadores ficam só na sessão (sessionStorage): somem ao fechar a aba ou o navegador e a estrela volta a chamar a atenção.
+const FLAG = 'curtiu-o-site';          // já curtiu nesta sessão (o total do servidor só conta a primeira vez)
 const FLAG_VIU = 'curtida-interagiu';  // já clicou ou tocou na estrela: a dica "clica aqui!" e o pulinho não voltam mais
-const ler = (k) => { try { return localStorage.getItem(k) === '1'; } catch { return false; } };
-const gravar = (k) => { try { localStorage.setItem(k, '1'); } catch { /* sem armazenamento: só vale nesta visita */ } };
+const ler = (k) => { try { return sessionStorage.getItem(k) === '1'; } catch { return false; } };
+const gravar = (k) => { try { sessionStorage.setItem(k, '1'); } catch { /* sem armazenamento: só vale nesta visita */ } };
 const PRIMEIRO_PULO_MS = 3000, INTERVALO_MS = 8000, DURACAO_PULO_MS = 900, DURACAO_CHUVA_MS = 5200, N_ESTRELAS = 46;
 const ESTRELA = '12,2.6 14.9,8.9 21.8,9.6 16.6,14.2 18.1,21 12,17.5 5.9,21 7.4,14.2 2.2,9.6 9.1,8.9';
 
@@ -17,7 +18,7 @@ function Chuva({ rodada }) {
   return (
     <div className="chuva" aria-hidden="true">
       {estrelas.map((e) => (
-        <svg key={e.i} className="chuva-estrela" viewBox="0 0 24 24" style={{ left: `${e.x}%`, width: e.tam, height: e.tam, '--dx': `${e.dx}px`, '--rot': `${e.rot}deg`, animationDelay: `${e.atraso}s`, animationDuration: `${e.dur}s` }}>
+        <svg key={`${rodada}-${e.i}`} className="chuva-estrela" viewBox="0 0 24 24" style={{ left: `${e.x}%`, width: e.tam, height: e.tam, '--dx': `${e.dx}px`, '--rot': `${e.rot}deg`, animationDelay: `${e.atraso}s`, animationDuration: `${e.dur}s` }}>
           <polygon points={ESTRELA} fill={e.cheia ? 'var(--red-solid)' : 'none'} stroke="var(--red-solid)" strokeWidth="2" strokeLinejoin="round" />
         </svg>
       ))}
@@ -26,14 +27,14 @@ function Chuva({ rodada }) {
 }
 
 /**
- * Botão de curtida no canto da tela. Antes da primeira interação: a estrela dá um pulinho a cada ~8 s e uma dica escrita à mão
+ * Botão de curtida no canto da tela (a curtida e a dica valem só enquanto a aba estiver aberta). Antes da primeira interação: a estrela dá um pulinho a cada ~8 s e uma dica escrita à mão
  * ("clica aqui!" com uma setinha) chama a atenção. Ao clicar (ou tocar), a dica e o pulinho param para sempre e cai uma chuva de estrelas.
  * O total de curtidas não é público (só aparece na página de estatísticas).
  */
 export default function Curtida() {
   const [ativo, setAtivo] = useState(false);       // false = contador indisponível (o botão não aparece)
-  const [jaCurtiu] = useState(() => ler(FLAG));
-  const [agora, setAgora] = useState(false);       // curtiu nesta visita
+  const [curtiu, setCurtiu] = useState(() => ler(FLAG));   // já curtiu nesta sessão
+  const [agora, setAgora] = useState(false);               // controla a animação de cada clique
   const [viu, setViu] = useState(() => ler(FLAG_VIU) || ler(FLAG));
   const [pulo, setPulo] = useState(false);
   const [chuva, setChuva] = useState(0);           // 0 = sem chuva; senão, o número da rodada
@@ -62,14 +63,13 @@ export default function Curtida() {
 
   if (!ativo) return null;
 
-  const curtiu = jaCurtiu || agora;
   const interagiu = () => { if (!viu) { setViu(true); gravar(FLAG_VIU); } };
   const clicar = () => {
     interagiu();
-    if (curtiu) return;
-    setAgora(true); gravar(FLAG);
+    // dá para clicar quantas vezes quiser: a animação e a chuva rodam de novo, mas o total do servidor só conta a primeira vez da sessão
+    setAgora(false); requestAnimationFrame(() => requestAnimationFrame(() => setAgora(true)));
     setChuva((n) => n + 1);
-    fetch('/api/curtidas', { method: 'POST' }).catch(() => {});
+    if (!curtiu) { setCurtiu(true); gravar(FLAG); fetch('/api/curtidas', { method: 'POST' }).catch(() => {}); }
   };
   return (
     <>
