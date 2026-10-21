@@ -39,11 +39,15 @@ jobs:
           node scripts/gerar-dados.mjs "$URL"
           npm run build
 
+      - name: Copiar a última conferência do painel do TSE
+        id: painel
+        run: node scripts/aplicar-painel.mjs
+
       - name: Enviar para o repositório (a Vercel publica sozinha)
-        if: steps.gerar.outputs.mudou == 'true'
+        if: steps.gerar.outputs.mudou == 'true' || steps.painel.outputs.mudou == 'true'
         run: |
           git config user.name "atualizador-listas"
           git config user.email "actions@users.noreply.github.com"
           git add public/secoes.json dados-fonte
-          git commit -m "Atualiza a lista do TSE: ${{ steps.gerar.outputs.resumo }}"
+          git commit -m "Atualiza a lista do TSE: ${{ steps.gerar.outputs.resumo || 'conferência do painel' }}"
           git push

@@ -14,7 +14,7 @@ npm run build    # gera dist/ (hospedagem estática, base relativa)
 
 ## Dados
 
-`dados-fonte/secoes_eleitorais_alteradas_2t-pais_2026_lista5.csv` é o CSV oficial da lista mais recente (20/10 às 15h27, 453 seções, baixada em 20/10 às 17h46; ISO-8859-1, separado por `;`). `public/secoes.json` é gerado dele, só com os campos da consulta (UF, município, zona, seção, onde votava, onde vai votar e eleitores da seção). Não há votos nem dados pessoais.
+`dados-fonte/` guarda o CSV oficial da lista mais recente (a data, o número de seções e quando foi baixada estão em `public/secoes.json` → `meta`, atualizados sozinhos a cada lista nova; ISO-8859-1, separado por `;`). `public/secoes.json` é gerado dele, só com os campos da consulta (UF, município, zona, seção, onde votava, onde vai votar e eleitores da seção). Não há votos nem dados pessoais.
 
 ```bash
 npm run dados -- dados-fonte/secoes_eleitorais_alteradas_2t-pais_2026_recent.csv
