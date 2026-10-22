@@ -41,8 +41,16 @@ if (!publicada) falha('não consegui descobrir a data de publicação: use --pub
 const pub = new Date(publicada);
 if (Number.isNaN(pub.getTime())) falha(`data de publicação inválida: ${publicada}`);
 
-const rows = parse(new TextDecoder('latin1').decode(bytes), { columns: true, delimiter: ';', skip_empty_lines: true });
-for (const c of ['sg_uf', 'nm_municipio', 'nr_zona', 'nm_local_votacao_inicial', 'nr_secao', 'nm_local_votacao_final', 'qt_eleitores']) if (!(rows[0] && c in rows[0])) falha(`coluna ausente no arquivo: ${c}. O formato mudou?`);
+const todas = parse(new TextDecoder('latin1').decode(bytes), { columns: true, delimiter: ';', skip_empty_lines: true });
+// Desde 22/10 o TSE publica TODAS as seções do país e deixa o local final em branco nas que não mudaram: só entram as que têm local final diferente do inicial.
+const rows = todas.filter((r) => ns(r.nm_local_votacao_final) !== '' && ns(r.nm_local_votacao_final) !== ns(r.nm_local_votacao_inicial));
+if (rows.length !== todas.length) {
+  console.log(`Arquivo com todas as seções: ${todas.length} linhas, ${rows.length} com local alterado (as demais são ignoradas).`);
+  const esc = (v) => (/[;"\r\n]/.test(v) ? `"${v.replace(/"/g, '""')}"` : v);
+  const cab = Object.keys(todas[0]);
+  bytes = Buffer.from([cab.join(';'), ...rows.map((r) => cab.map((c) => esc(r[c] ?? '')).join(';'))].join('\r\n') + '\r\n', 'latin1');   // o que fica guardado em dados-fonte/ é só o recorte
+}
+for (const c of ['sg_uf', 'nm_municipio', 'nr_zona', 'nm_local_votacao_inicial', 'nr_secao', 'nm_local_votacao_final', 'qt_eleitores']) if (!(todas[0] && c in todas[0])) falha(`coluna ausente no arquivo: ${c}. O formato mudou?`);
 // [uf, município, zona, seção, onde votava, onde vai votar, eleitores da seção]
 const dados = rows.map((r) => [r.sg_uf, r.nm_municipio, Number(r.nr_zona), Number(r.nr_secao), r.nm_local_votacao_inicial, r.nm_local_votacao_final, Number(r.qt_eleitores)]);
 if (new Set(dados.map((d) => d.slice(0, 4).join('|'))).size !== dados.length) falha('há seções repetidas no arquivo.');
