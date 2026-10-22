@@ -429,7 +429,12 @@ html { scroll-behavior: smooth; }
 .chuva-estrela { position: absolute; top: -40px; height: auto; opacity: 0; animation: chuva-cai 3s linear forwards; }
 @keyframes chuva-cai { 0% { transform: translate(0, 0) rotate(0); opacity: 0; } 6% { opacity: 1; } 85% { opacity: 1; } 100% { transform: translate(var(--dx), calc(100vh + 60px)) rotate(var(--rot)); opacity: 0; } }
 @media (max-width: 520px) { .curtida .dica-texto { font-size: 1.35rem; } }
-@media (prefers-reduced-motion: reduce) { .curtida.pulo .estrela, .curtida .dica-escrita { animation: none !important; } .chuva { display: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .curtida.pulo .estrela, .curtida .dica-escrita { animation: none !important; }
+  /* "Reduzir movimento" ligado no aparelho: as estrelas não caem; aparecem no lugar e somem aos poucos (só opacidade, sem deslocamento) */
+  .chuva-estrela { top: calc(var(--y, 40) * 1%); transform: none; animation: chuva-pisca 2.4s ease-in-out forwards !important; }
+}
+@keyframes chuva-pisca { 0% { opacity: 0; } 30% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
 @media print { .chuva, .curtida .dica-escrita { display: none !important; } }
 
 .icone-link.alto { vertical-align: super; margin-left: 2px; line-height: 1; opacity: 1; color: var(--red); position: relative; top: -.1em; } .icone-link.alto svg { display: block; }

@@ -13,12 +13,12 @@ const ESTRELA = '12,2.6 14.9,8.9 21.8,9.6 16.6,14.2 18.1,21 12,17.5 5.9,21 7.4,1
 function Chuva({ rodada }) {
   const estrelas = useMemo(() => Array.from({ length: N_ESTRELAS }, (_, i) => ({
     i, x: Math.random() * 100, tam: 12 + Math.random() * 20, atraso: Math.random() * 1.1, dur: 2.3 + Math.random() * 1.7,
-    dx: (Math.random() - 0.5) * 120, rot: (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 360), cheia: Math.random() < 0.8,
+    dx: (Math.random() - 0.5) * 120, rot: (Math.random() < 0.5 ? -1 : 1) * (180 + Math.random() * 360), cheia: Math.random() < 0.8, y: 4 + Math.random() * 84,
   })), [rodada]);
   return (
     <div className="chuva" aria-hidden="true">
       {estrelas.map((e) => (
-        <svg key={`${rodada}-${e.i}`} className="chuva-estrela" viewBox="0 0 24 24" style={{ left: `${e.x}%`, width: e.tam, height: e.tam, '--dx': `${e.dx}px`, '--rot': `${e.rot}deg`, animationDelay: `${e.atraso}s`, animationDuration: `${e.dur}s` }}>
+        <svg key={`${rodada}-${e.i}`} className="chuva-estrela" viewBox="0 0 24 24" style={{ left: `${e.x}%`, width: e.tam, height: e.tam, '--dx': `${e.dx}px`, '--y': e.y, '--rot': `${e.rot}deg`, animationDelay: `${e.atraso}s`, animationDuration: `${e.dur}s` }}>
           <polygon points={ESTRELA} fill={e.cheia ? 'var(--red-solid)' : 'none'} stroke="var(--red-solid)" strokeWidth="2" strokeLinejoin="round" />
         </svg>
       ))}
