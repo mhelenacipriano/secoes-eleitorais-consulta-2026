@@ -1,10 +1,10 @@
 name: Atualizar lista do TSE (automático)
 
 # Lê o link da lista mais recente que o repositório da análise já descobriu (o workflow de lá lê o painel do TSE) e, se a lista
-# for nova, atualiza a busca. Roda 15 min depois do workflow da análise: 06:50, 11:50, 15:50 e 20:50 (Brasília = UTC−3).
+# for nova, atualiza a busca. Roda 5 min depois de cada conferência da análise (:36 e :51, às 06h, 11h, 15h e 20h de Brasília = UTC−3).
 on:
   schedule:
-    - cron: '50 9,14,18,23 * * *'
+    - cron: '36,51 9,14,18,23 * * *'
   workflow_dispatch:
 
 permissions:

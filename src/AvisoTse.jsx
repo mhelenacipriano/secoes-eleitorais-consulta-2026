@@ -12,6 +12,7 @@ export default function AvisoTse({ meta }) {
   const vencida = prox.iso && agora > new Date(prox.iso).getTime() + 30 * 60000;   // 30 min de tolerância
   const conferidaDepois = verificadoEm && prox.iso && new Date(verificadoEm) > new Date(prox.iso);   // já olhamos o painel depois do horário previsto
   const passou = vencida && !conferidaDepois;
+  const aguardando = !passou && prox.iso && agora > new Date(prox.iso).getTime() && !conferidaDepois;   // o horário previsto passou, mas ainda não conferimos depois dele
   return (
     <aside className="aviso-tse" role="note" aria-label="Aviso sobre a atualização das listas do TSE">
       <p className="aviso-tse-tit"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm-1 3v6l4.2 2.5.8-1.3-3.5-2.1V7H11Z" fill="currentColor" /></svg> As listas do TSE são atualizadas várias vezes por dia</p>
@@ -23,6 +24,7 @@ export default function AvisoTse({ meta }) {
       </dl>
       <p className="aviso-tse-baixada">A lista mais recente que temos foi baixada em <strong>{meta ? dataHora(meta.baixadaEm || meta.publicadaEm) : '…'}</strong>. Ela pode já ter sido atualizada no site do TSE desde então: <strong>confirme o seu local de votação no e-Título.</strong></p>
       {verificadoEm && <p className="aviso-tse-baixada">Conferimos o painel do TSE pela última vez em <strong>{dataHora(verificadoEm)}</strong>{conferidaDepois && vencida ? ': o TSE ainda não publicou a atualização prevista.' : '.'}</p>}
+      {aguardando && <p className="aviso-tse-baixada" role="status"><strong>O TSE deve ter publicado a atualização das {dataTse(prox.iso).slice(-5)}.</strong> Estamos conferindo: a lista nova chega aqui em alguns minutos.</p>}
       {passou && <p className="aviso-tse-atraso" role="status"><strong>A próxima atualização do TSE já deveria ter saído.</strong> Os dados aqui podem estar desatualizados.</p>}
     </aside>
   );
