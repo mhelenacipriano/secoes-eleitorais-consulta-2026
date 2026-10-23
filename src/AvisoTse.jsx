@@ -18,7 +18,7 @@ export default function AvisoTse({ meta }) {
       <p className="aviso-tse-tit"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm0 2a8 8 0 1 1 0 16 8 8 0 0 1 0-16Zm-1 3v6l4.2 2.5.8-1.3-3.5-2.1V7H11Z" fill="currentColor" /></svg> As listas do TSE são atualizadas várias vezes por dia</p>
       <p className="aviso-tse-fonte">O site do TSE informa:</p>
       <dl className="aviso-tse-grade">
-        <div><dt>Última atualização</dt><dd>{meta ? dataTse(meta.publicadaEm) : '…'}</dd></div>
+        <div><dt>Última atualização</dt><dd>{meta ? dataTse((pn && pn.ultimaAtualizacao) || meta.publicadaEm) : '…'}</dd></div>
         <div><dt>Próxima atualização</dt><dd>{prox.texto || '…'}</dd></div>
         <div><dt>Frequência de atualização</dt><dd>às {HORARIOS_TSE.slice(0, -1).join(', ')} e {HORARIOS_TSE[HORARIOS_TSE.length - 1]}</dd></div>
       </dl>
