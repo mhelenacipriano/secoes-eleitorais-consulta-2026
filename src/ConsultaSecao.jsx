@@ -39,6 +39,30 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
   const achadas = useMemo(() => (preenchido ? filtrar(dados.linhas, { ...VAZIO, ...c }) : []), [dados, c, preenchido]);
   const todosMunicipios = useMemo(() => [...new Set(Object.values(dados.todosMunicipios).flat())].sort((a, b) => a.localeCompare(b, 'pt-BR')), [dados]);
   const sugestoes = c.uf ? dados.todosMunicipios[c.uf] || [] : todosMunicipios;
+  // sugestões a partir da própria lista: municípios com seções alteradas (e quantas) vêm primeiro, depois os demais
+  const indice = useMemo(() => { const m = new Map(); for (const l of dados.linhas) { const k = `${l.uf}|${l.municipio}`; const o = m.get(k) || { municipio: l.municipio, uf: l.uf, n: 0 }; o.n++; m.set(k, o); } return [...m.values()]; }, [dados]);
+  const opcoesMun = useMemo(() => {
+    const naLista = indice.filter((o) => !c.uf || o.uf === c.uf).sort((a, b) => b.n - a.n || a.municipio.localeCompare(b.municipio, 'pt-BR'))
+      .map((o) => ({ label: o.municipio, uf: o.uf, n: o.n, grupo: 'Com seções alteradas na lista' }));
+    const nomes = new Set(naLista.map((o) => norm(o.label)));
+    const outros = sugestoes.filter((m) => !nomes.has(norm(m))).map((m) => ({ label: m, uf: '', n: 0, grupo: 'Outros municípios' }));
+    return [...naLista, ...outros];
+  }, [indice, sugestoes, c.uf]);
+  const filtraMunSug = (ops, { inputValue }) => {
+    const n = norm(inputValue); if (!n) return ops.slice(0, 80);
+    const ok = ops.filter((o) => norm(o.label).includes(n));
+    const rank = (o) => (norm(o.label).startsWith(n) ? 0 : 1);
+    const lista = ok.filter((o) => o.n > 0).sort((a, b) => rank(a) - rank(b) || b.n - a.n), outros = ok.filter((o) => o.n === 0).sort((a, b) => rank(a) - rank(b));
+    return [...lista, ...outros].slice(0, 80);
+  };
+  // zonas e seções que existem na lista para o que já foi preenchido (estado, município e, no caso das seções, a zona)
+  const contagem = (campo) => {
+    const nm = norm(c.mun), g = new Map();
+    for (const l of dados.linhas) if ((!c.uf || l.uf === c.uf) && (!nm || l.mun.includes(nm)) && (campo === 'zona' || !c.zona || l.zona === Number(c.zona))) g.set(l[campo], (g.get(l[campo]) || 0) + 1);
+    return g;
+  };
+  const zonasLista = useMemo(() => contagem('zona'), [dados, c.uf, c.mun]);   // eslint-disable-line react-hooks/exhaustive-deps
+  const secoesLista = useMemo(() => contagem('secao'), [dados, c.uf, c.mun, c.zona]);   // eslint-disable-line react-hooks/exhaustive-deps
   // só estado e/ou município (sem zona nem seção) e nada encontrado: diz que não há registro naquele local
   const semZonaSecao = Boolean((c.uf || c.mun.trim()) && !c.zona && !c.secao && (!c.mun.trim() || sugestoes.some((m) => norm(m) === norm(c.mun))));
   // 5.500 cidades: filtra sem acento e mostra no máximo 80 por vez
@@ -76,7 +100,15 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
     }
     return null;
   }, [dados, c]);
-  const campoNum =(k, rotulo, ph) => <TextField size="small" label={rotulo} placeholder={ph} value={c[k]} onChange={(e) => set(k, e.target.value.replace(/\D/g, ''))} slotProps={{ htmlInput: { inputMode: 'numeric', pattern: '[0-9]*' }, inputLabel: { shrink: true } }} />;
+  const campoNum = (k, rotulo, ph, mapa) => {
+    const opcoes = [...mapa.keys()].sort((x, y) => x - y).map(String);
+    return (
+      <Autocomplete size="small" freeSolo openOnFocus options={opcoes} inputValue={c[k]} onInputChange={(_, v) => set(k, String(v).replace(/\D/g, ''))}
+        filterOptions={(ops, { inputValue }) => (inputValue ? ops.filter((o) => o.startsWith(inputValue)) : ops).slice(0, 40)}
+        renderOption={(props, o) => { const { key, ...resto } = props; return <li key={key} {...resto}><span>{k === 'zona' ? 'Zona' : 'Seção'} <strong>{o}</strong></span>{k === 'zona' && <span className="op-n">{mapa.get(Number(o))} {mapa.get(Number(o)) === 1 ? 'seção alterada' : 'seções alteradas'}</span>}</li>; }}
+        renderInput={(params) => <TextField {...params} label={rotulo} placeholder={ph} inputProps={{ ...params.inputProps, inputMode: 'numeric', pattern: '[0-9]*' }} slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+    );
+  };
 
   return (
     <section className="consulta" aria-labelledby="titulo-consulta">
@@ -89,10 +121,13 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
           getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
           filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
           noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
-        <Autocomplete size="small" freeSolo options={sugestoes} filterOptions={filtraMun} inputValue={c.mun} onInputChange={(_, v) => set('mun', v)} noOptionsText="Nenhum município"
+        <Autocomplete size="small" freeSolo options={opcoesMun} filterOptions={filtraMunSug} groupBy={(o) => o.grupo} getOptionLabel={(o) => (typeof o === 'string' ? o : o.label)}
+          isOptionEqualToValue={(a, b) => a.label === b.label && a.uf === b.uf} inputValue={c.mun} onInputChange={(_, v) => set('mun', v)}
+          onChange={(_, v) => { if (v && typeof v === 'object') setC((x) => ({ ...x, mun: v.label, uf: x.uf || v.uf })); }} noOptionsText="Nenhum município"
+          renderOption={(props, o) => { const { key, ...resto } = props; return <li key={`${o.label}-${o.uf}`} {...resto}><span>{o.label}{o.uf ? <> · <span className="op-uf">{o.uf}</span></> : null}</span>{o.n > 0 && <span className="op-n">{o.n} {o.n === 1 ? 'seção alterada' : 'seções alteradas'}</span>}</li>; }}
           renderInput={(params) => <TextField {...params} label="Município" placeholder="Digite o município" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
-        {campoNum('zona', 'Zona', 'Ex.: 12')}
-        {campoNum('secao', 'Seção', 'Ex.: 345')}
+        {campoNum('zona', 'Zona', 'Ex.: 12', zonasLista)}
+        {campoNum('secao', 'Seção', 'Ex.: 345', secoesLista)}
         <Button className="btn-limpar" variant="text" color="inherit" type="button" onClick={() => setC({ uf: '', mun: '', zona: '', secao: '' })} disabled={!preenchido}>Limpar</Button>
       </form>
 
