@@ -100,13 +100,19 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
     }
     return null;
   }, [dados, c]);
+  // no celular o teclado cobre a parte de baixo da tela (e a lista de sugestões, que abre embaixo do campo): ao tocar num campo, ele sobe para perto do topo
+  const subirCampo = (e) => {
+    if (!window.matchMedia('(max-width: 760px)').matches) return;
+    const el = e.currentTarget;
+    setTimeout(() => { const topo = el.getBoundingClientRect().top + window.scrollY - 84; window.scrollTo({ top: Math.max(0, topo), behavior: 'smooth' }); }, 320);   // espera o teclado abrir
+  };
   const campoNum = (k, rotulo, ph, mapa) => {
     const opcoes = [...mapa.keys()].sort((x, y) => x - y).map(String);
     return (
       <Autocomplete size="small" freeSolo openOnFocus options={opcoes} inputValue={c[k]} onInputChange={(_, v) => set(k, String(v).replace(/\D/g, ''))}
         filterOptions={(ops, { inputValue }) => (inputValue ? ops.filter((o) => o.startsWith(inputValue)) : ops).slice(0, 40)}
         renderOption={(props, o) => { const { key, ...resto } = props; return <li key={key} {...resto}><span>{k === 'zona' ? 'Zona' : 'Seção'} <strong>{o}</strong></span>{k === 'zona' && <span className="op-n">{mapa.get(Number(o))} {mapa.get(Number(o)) === 1 ? 'seção alterada' : 'seções alteradas'}</span>}</li>; }}
-        renderInput={(params) => <TextField {...params} label={rotulo} placeholder={ph} inputProps={{ ...params.inputProps, inputMode: 'numeric', pattern: '[0-9]*' }} slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+        renderInput={(params) => <TextField {...params} onFocus={subirCampo} label={rotulo} placeholder={ph} inputProps={{ ...params.inputProps, inputMode: 'numeric', pattern: '[0-9]*' }} slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
     );
   };
 
@@ -120,12 +126,12 @@ export default function ConsultaSecao({ dados, onVerLista, forcarUf, onUf }) {
         <Autocomplete size="small" options={dados.todasUfs} value={c.uf || null} onChange={(_, v) => setC((x) => ({ ...x, uf: v || '', mun: '' }))}
           getOptionLabel={(u) => (u ? `${u} — ${nomeEstado(u)}` : '')} isOptionEqualToValue={(a, b) => a === b}
           filterOptions={(ops, { inputValue }) => { const n = norm(inputValue); return ops.filter((u) => norm(`${u} ${nomeEstado(u)}`).includes(n)); }}
-          noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+          noOptionsText="Nenhum estado" renderInput={(params) => <TextField {...params} onFocus={subirCampo} label="Estado" placeholder="Nome ou sigla" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
         <Autocomplete size="small" freeSolo options={opcoesMun} filterOptions={filtraMunSug} groupBy={(o) => o.grupo} getOptionLabel={(o) => (typeof o === 'string' ? o : o.label)}
           isOptionEqualToValue={(a, b) => a.label === b.label && a.uf === b.uf} inputValue={c.mun} onInputChange={(_, v) => set('mun', v)}
           onChange={(_, v) => { if (v && typeof v === 'object') setC((x) => ({ ...x, mun: v.label, uf: x.uf || v.uf })); }} noOptionsText="Nenhum município"
           renderOption={(props, o) => { const { key, ...resto } = props; return <li key={`${o.label}-${o.uf}`} {...resto}><span>{o.label}{o.uf ? <> · <span className="op-uf">{o.uf}</span></> : null}</span>{o.n > 0 && <span className="op-n">{o.n} {o.n === 1 ? 'seção alterada' : 'seções alteradas'}</span>}</li>; }}
-          renderInput={(params) => <TextField {...params} label="Município" placeholder="Digite o município" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
+          renderInput={(params) => <TextField {...params} onFocus={subirCampo} label="Município" placeholder="Digite o município" slotProps={{ ...params.slotProps, inputLabel: { ...params.slotProps?.inputLabel, shrink: true } }} />} />
         {campoNum('zona', 'Zona', 'Ex.: 12', zonasLista)}
         {campoNum('secao', 'Seção', 'Ex.: 345', secoesLista)}
         <Button className="btn-limpar" variant="text" color="inherit" type="button" onClick={() => setC({ uf: '', mun: '', zona: '', secao: '' })} disabled={!preenchido}>Limpar</Button>

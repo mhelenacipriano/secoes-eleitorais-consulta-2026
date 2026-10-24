@@ -454,3 +454,6 @@ html { scroll-behavior: smooth; }
 /* sugestões da busca: nome à esquerda, quantas seções alteradas à direita */
 .MuiAutocomplete-option { display: flex !important; justify-content: space-between; gap: 12px; }
 .op-n { color: var(--muted); font-size: .8rem; white-space: nowrap; } .op-uf { font-weight: 700; }
+
+/* a lista de sugestões não passa da área visível acima do teclado, no celular */
+@media (max-width: 760px) { .MuiAutocomplete-listbox { max-height: min(34vh, 260px) !important; } .MuiAutocomplete-option { min-height: 48px; } }
