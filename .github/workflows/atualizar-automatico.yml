@@ -2,9 +2,11 @@ name: Atualizar lista do TSE (automático)
 
 # Lê o link da lista mais recente que o repositório da análise já descobriu (o workflow de lá lê o painel do TSE) e, se a lista
 # for nova, atualiza a busca. Roda 5 min depois de cada conferência da análise (:36 e :51, às 06h, 11h, 15h e 20h de Brasília = UTC−3).
+# Sem agendamento: rode à mão em Actions → Run workflow. Para voltar a rodar sozinho, acrescente em "on:" um bloco
+#   schedule:
+#     - cron: '<minutos> <horas em UTC> * * *'
+# (o GitHub pode atrasar ou pular execuções agendadas).
 on:
-  schedule:
-    - cron: '36,51 9,14,18,23 * * *'
   workflow_dispatch:
 
 permissions:
